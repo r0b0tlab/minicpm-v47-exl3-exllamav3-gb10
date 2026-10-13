@@ -1,0 +1,18 @@
+{
+ "2048": {
+  "depth": 32768,
+  "prefill_tok_s_median": 2658.833864321163,
+  "decode_tok_s_median": 41.265,
+  "ttft_cold_s_median": 12.324200000000001,
+  "repeats": 2
+ },
+ "4096": {
+  "depth": 32768,
+  "prefill_tok_s_median": 2777.6553560612347,
+  "decode_tok_s_median": 41.995,
+  "ttft_cold_s_median": 11.797,
+  "repeats": 2
+ },
+ "chosen": 2048,
+ "rule": "4096 is adopted only if its median prefill tokens/s at 32,768 tokens is more than 5 % above 2048"
+}

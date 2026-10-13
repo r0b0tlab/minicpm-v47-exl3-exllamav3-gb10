@@ -1,0 +1,27 @@
+# Runtime requirements, installed into the click-run venv AFTER torch.
+# torch itself is pinned in runtime.lock.json (aarch64 cu130 wheel from the
+# PyTorch index) and installed by the "torch" stage. Versions are the ones the
+# measurements in docs/RESULTS.md were taken with.
+
+# build toolchain for the ExLlamaV3 CUDA extension (pip wheel --no-build-isolation)
+setuptools==84.0.0
+wheel==0.48.0
+packaging==26.3
+ninja==1.13.2
+
+# ExLlamaV3 runtime dependencies
+numpy==2.5.3
+tokenizers==0.23.2
+safetensors==0.8.0
+rich==15.0.0
+typing_extensions==4.16.0
+pillow==12.3.0
+PyYAML==6.0.3
+marisa-trie==1.4.1
+pydantic==2.13.5
+llguidance==1.8.0
+Jinja2==3.1.6
+
+# model download (anonymous, parallel workers)
+huggingface_hub==1.31.0
+hf-xet==1.6.0

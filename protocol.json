@@ -1,0 +1,138 @@
+{
+  "protocol": "r0b0tlab.model-repo",
+  "version": 2,
+  "supersedes": "v1: the layout of r0b0tlab/glm53-flash-exl3-exllamav3-gb10",
+  "document": "docs/PROTOCOL.md",
+  "repo": {
+    "name": "r0b0tlab/minicpm-v47-exl3-exllamav3-gb10",
+    "licence": "MIT",
+    "model": "MiniCPM-V-4.7-35B-A3B",
+    "engine": "ExLlamaV3",
+    "hardware": "NVIDIA GB10 (DGX Spark, aarch64, SM121)"
+  },
+  "required_paths": [
+    "README.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "runtime.lock.json",
+    "protocol.json",
+    "requirements.txt",
+    "run.sh",
+    ".github/workflows/ci.yml",
+    "config/model.yaml",
+    "config/profiles.yaml",
+    "docs/PROTOCOL.md",
+    "docs/RESULTS.md",
+    "docs/QUALIFICATION.md",
+    "docs/MEMORY.md",
+    "docs/TROUBLESHOOTING.md",
+    "scripts/click_run.sh",
+    "scripts/serve_openai.py",
+    "scripts/smoke.py",
+    "scripts/bench.py",
+    "scripts/exact_niah.py",
+    "scripts/retire_page_cache.py",
+    "scripts/preflight.py",
+    "scripts/stagectl.py",
+    "scripts/verify_model.py",
+    "scripts/verify_tree.py",
+    "scripts/render_results.py",
+    "scripts/check_public.sh",
+    "scripts/env_report.sh",
+    "scripts/errors.tsv",
+    "tests/",
+    "evidence/",
+    "eval/run_suite.sh"
+  ],
+  "optional_paths": [
+    "scripts/guard.py",
+    "scripts/bootstrap.sh",
+    "eval/",
+    "docs/Q200_NOTES.md"
+  ],
+  "profiles": {
+    "file": "config/profiles.yaml",
+    "default": "gb10-text-262k",
+    "names": [
+      "gb10-text-262k",
+      "gb10-text-262k-b4",
+      "gb10-text-32k",
+      "gb10-text-16k-lowmem"
+    ]
+  },
+  "pins": {
+    "lock": "runtime.lock.json",
+    "model_config": "config/model.yaml",
+    "readme_quotes": [
+      "README.md",
+      "docs/RESULTS.md"
+    ]
+  },
+  "evidence_bundles": [
+    {
+      "dir": "evidence/exllamav3-plain-20261013",
+      "column": "exllamav3-plain",
+      "primary": true
+    },
+    {
+      "dir": "evidence/fidelity-20261013",
+      "column": "fidelity",
+      "primary": true
+    },
+    {
+      "dir": "evidence/reference-dspark-engine-20261013",
+      "column": "reference-engine",
+      "primary": true
+    }
+  ],
+  "generated_blocks": {
+    "README.md": [
+      "results-summary",
+      "fidelity-kl"
+    ],
+    "docs/RESULTS.md": [
+      "results-summary",
+      "q200-table",
+      "agreement-table",
+      "bench-table",
+      "niah-table",
+      "legd-table",
+      "memory-table",
+      "fidelity-kl",
+      "clickrun-table",
+      "depthscan-table",
+      "chunk-table",
+      "warmup-table"
+    ],
+    "docs/TROUBLESHOOTING.md": [
+      "error-codes"
+    ]
+  },
+  "size_limits": {
+    "max_file_bytes": 1048576,
+    "max_repo_bytes": 5000000,
+    "allow_large": [
+      "eval/niah/niah_261k.json.gz"
+    ]
+  },
+  "scan_exclude_dirs": [
+    ".git",
+    ".venv",
+    ".state",
+    ".cache",
+    "models",
+    "__pycache__",
+    ".kit"
+  ],
+  "exit_codes": {
+    "0": "ok",
+    "10": "layout: a required path is missing",
+    "11": "protocol.json is malformed or disagrees with the tree",
+    "20": "evidence: a bundle or its MANIFEST.sha256 does not match",
+    "30": "pins: runtime.lock.json, config/ and the documents disagree",
+    "40": "forbidden strings found in a shipped file",
+    "50": "size: a file or the repository exceeds the limits",
+    "60": "generated blocks drift from the evidence bundles",
+    "70": "error-code table drift between scripts/errors.tsv and the documents"
+  }
+}

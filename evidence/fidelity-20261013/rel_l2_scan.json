@@ -1,0 +1,1262 @@
+{
+  "created": "2026-10-12T22:23:06",
+  "elapsed_s": 1040.0,
+  "groups": [
+    {
+      "K": 6,
+      "expected_rfn": 0.019650504848302656,
+      "flagged": 0,
+      "kind": "lm_head",
+      "max": 0.020037177950143814,
+      "median": 0.020037177950143814,
+      "n": 1,
+      "p90": 0.020037177950143814,
+      "p99": 0.020037177950143814
+    },
+    {
+      "K": 6,
+      "expected_rfn": 0.019650504848302656,
+      "flagged": 0,
+      "kind": "mlp.experts.*.down_proj",
+      "max": 0.021399032324552536,
+      "median": 0.01780463568866253,
+      "n": 10240,
+      "p90": 0.018384285271167755,
+      "p99": 0.0196835957467556
+    },
+    {
+      "K": 6,
+      "expected_rfn": 0.019650504848302656,
+      "flagged": 0,
+      "kind": "mlp.experts.*.gate_proj",
+      "max": 0.02067987434566021,
+      "median": 0.018834449350833893,
+      "n": 10240,
+      "p90": 0.0191406961530447,
+      "p99": 0.01940850354731083
+    },
+    {
+      "K": 6,
+      "expected_rfn": 0.019650504848302656,
+      "flagged": 0,
+      "kind": "mlp.experts.*.up_proj",
+      "max": 0.01974916271865368,
+      "median": 0.0188525402918458,
+      "n": 10240,
+      "p90": 0.01916465163230896,
+      "p99": 0.019429262727499008
+    },
+    {
+      "K": 8,
+      "expected_rfn": 0.00511518764272768,
+      "flagged": 0,
+      "kind": "linear_attn.in_proj_qkv",
+      "max": 0.007341356948018074,
+      "median": 0.005351887317374349,
+      "n": 30,
+      "p90": 0.0055940840393304825,
+      "p99": 0.007341356948018074
+    },
+    {
+      "K": 8,
+      "expected_rfn": 0.00511518764272768,
+      "flagged": 0,
+      "kind": "linear_attn.in_proj_z",
+      "max": 0.007146675139665604,
+      "median": 0.005619697971269488,
+      "n": 30,
+      "p90": 0.0062409923411905766,
+      "p99": 0.007146675139665604
+    },
+    {
+      "K": 8,
+      "expected_rfn": 0.00511518764272768,
+      "flagged": 0,
+      "kind": "linear_attn.out_proj",
+      "max": 0.006469741929322481,
+      "median": 0.0057087428867816925,
+      "n": 30,
+      "p90": 0.0060801394283771515,
+      "p99": 0.006469741929322481
+    },
+    {
+      "K": 8,
+      "expected_rfn": 0.00511518764272768,
+      "flagged": 0,
+      "kind": "mlp.shared_expert.down_proj",
+      "max": 0.00588332861661911,
+      "median": 0.005270835943520069,
+      "n": 40,
+      "p90": 0.0056854067370295525,
+      "p99": 0.00588332861661911
+    },
+    {
+      "K": 8,
+      "expected_rfn": 0.00511518764272768,
+      "flagged": 0,
+      "kind": "mlp.shared_expert.gate_proj",
+      "max": 0.005972780752927065,
+      "median": 0.0052418389823287725,
+      "n": 40,
+      "p90": 0.005404127761721611,
+      "p99": 0.005972780752927065
+    },
+    {
+      "K": 8,
+      "expected_rfn": 0.00511518764272768,
+      "flagged": 0,
+      "kind": "mlp.shared_expert.up_proj",
+      "max": 0.005631390959024429,
+      "median": 0.005248625064268708,
+      "n": 40,
+      "p90": 0.005477140657603741,
+      "p99": 0.005631390959024429
+    },
+    {
+      "K": 8,
+      "expected_rfn": 0.00511518764272768,
+      "flagged": 0,
+      "kind": "self_attn.k_proj",
+      "max": 0.005382574629038572,
+      "median": 0.005273586371913552,
+      "n": 10,
+      "p90": 0.005348848644644022,
+      "p99": 0.005382574629038572
+    },
+    {
+      "K": 8,
+      "expected_rfn": 0.00511518764272768,
+      "flagged": 0,
+      "kind": "self_attn.o_proj",
+      "max": 0.006208403967320919,
+      "median": 0.0059022749774158,
+      "n": 10,
+      "p90": 0.006172784138470888,
+      "p99": 0.006208403967320919
+    },
+    {
+      "K": 8,
+      "expected_rfn": 0.00511518764272768,
+      "flagged": 0,
+      "kind": "self_attn.q_proj",
+      "max": 0.008872535079717636,
+      "median": 0.006451477995142341,
+      "n": 10,
+      "p90": 0.007248481269925833,
+      "p99": 0.008872535079717636
+    },
+    {
+      "K": 8,
+      "expected_rfn": 0.00511518764272768,
+      "flagged": 0,
+      "kind": "self_attn.v_proj",
+      "max": 0.005533447954803705,
+      "median": 0.0052820981945842505,
+      "n": 10,
+      "p90": 0.005484673194587231,
+      "p99": 0.005533447954803705
+    }
+  ],
+  "method": "every quantised matrix of the pack is dequantised and compared with the bf16 source (relative L2 over live channels)",
+  "schema": "rel_l2_scan-card/1",
+  "source_schema": "rel_l2_scan/1",
+  "summary": {
+    "K_values": [
+      6,
+      8
+    ],
+    "dead_channels_total": 59093,
+    "flagged": 0,
+    "flagged_by_layer": {},
+    "matrices": 30971,
+    "matrices_flagged_if_full_rel_l2_were_used": 392,
+    "matrices_with_dead_channels": 515,
+    "thresholds": {
+      "abs_cut_K4": 0.3,
+      "accept_ratio": 1.5,
+      "expected_rfn": "0.29 * 1.96 ** (2 - K)",
+      "flag_ratio": 3.0,
+      "identity_tol_K16": 0.01,
+      "min_group": 8
+    },
+    "watch": 0
+  },
+  "worst_per_group": {
+    "K6|lm_head": [
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": null,
+        "rel_l2": 0.020037177950143814,
+        "tensor": "lm_head"
+      }
+    ],
+    "K6|mlp.experts.*.down_proj": [
+      {
+        "dead_channels": 0,
+        "expert": 118,
+        "flag": false,
+        "layer": 33,
+        "rel_l2": 0.021399032324552536,
+        "tensor": "model.language_model.layers.33.mlp.experts.118.down_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 40,
+        "flag": false,
+        "layer": 39,
+        "rel_l2": 0.021144671365618706,
+        "tensor": "model.language_model.layers.39.mlp.experts.40.down_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 213,
+        "flag": false,
+        "layer": 39,
+        "rel_l2": 0.02110971324145794,
+        "tensor": "model.language_model.layers.39.mlp.experts.213.down_proj"
+      },
+      {
+        "dead_channels": 1,
+        "expert": 154,
+        "flag": false,
+        "layer": 39,
+        "rel_l2": 0.021062683314085007,
+        "tensor": "model.language_model.layers.39.mlp.experts.154.down_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 7,
+        "flag": false,
+        "layer": 38,
+        "rel_l2": 0.021048588678240776,
+        "tensor": "model.language_model.layers.38.mlp.experts.7.down_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 110,
+        "flag": false,
+        "layer": 39,
+        "rel_l2": 0.020983530208468437,
+        "tensor": "model.language_model.layers.39.mlp.experts.110.down_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 186,
+        "flag": false,
+        "layer": 39,
+        "rel_l2": 0.020918255671858788,
+        "tensor": "model.language_model.layers.39.mlp.experts.186.down_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 122,
+        "flag": false,
+        "layer": 38,
+        "rel_l2": 0.020910078659653664,
+        "tensor": "model.language_model.layers.38.mlp.experts.122.down_proj"
+      },
+      {
+        "dead_channels": 3,
+        "expert": 149,
+        "flag": false,
+        "layer": 39,
+        "rel_l2": 0.020893849432468414,
+        "tensor": "model.language_model.layers.39.mlp.experts.149.down_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 231,
+        "flag": false,
+        "layer": 39,
+        "rel_l2": 0.0207971278578043,
+        "tensor": "model.language_model.layers.39.mlp.experts.231.down_proj"
+      }
+    ],
+    "K6|mlp.experts.*.gate_proj": [
+      {
+        "dead_channels": 8,
+        "expert": 206,
+        "flag": false,
+        "layer": 4,
+        "rel_l2": 0.02067987434566021,
+        "tensor": "model.language_model.layers.4.mlp.experts.206.gate_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 166,
+        "flag": false,
+        "layer": 7,
+        "rel_l2": 0.020545542240142822,
+        "tensor": "model.language_model.layers.7.mlp.experts.166.gate_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 64,
+        "flag": false,
+        "layer": 5,
+        "rel_l2": 0.02008580043911934,
+        "tensor": "model.language_model.layers.5.mlp.experts.64.gate_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 120,
+        "flag": false,
+        "layer": 39,
+        "rel_l2": 0.01994786411523819,
+        "tensor": "model.language_model.layers.39.mlp.experts.120.gate_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 6,
+        "flag": false,
+        "layer": 32,
+        "rel_l2": 0.019765326753258705,
+        "tensor": "model.language_model.layers.32.mlp.experts.6.gate_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 172,
+        "flag": false,
+        "layer": 20,
+        "rel_l2": 0.01975548453629017,
+        "tensor": "model.language_model.layers.20.mlp.experts.172.gate_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 195,
+        "flag": false,
+        "layer": 6,
+        "rel_l2": 0.01975223608314991,
+        "tensor": "model.language_model.layers.6.mlp.experts.195.gate_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 172,
+        "flag": false,
+        "layer": 8,
+        "rel_l2": 0.019739612936973572,
+        "tensor": "model.language_model.layers.8.mlp.experts.172.gate_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 28,
+        "flag": false,
+        "layer": 33,
+        "rel_l2": 0.019735753536224365,
+        "tensor": "model.language_model.layers.33.mlp.experts.28.gate_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 136,
+        "flag": false,
+        "layer": 33,
+        "rel_l2": 0.019699877128005028,
+        "tensor": "model.language_model.layers.33.mlp.experts.136.gate_proj"
+      }
+    ],
+    "K6|mlp.experts.*.up_proj": [
+      {
+        "dead_channels": 0,
+        "expert": 104,
+        "flag": false,
+        "layer": 39,
+        "rel_l2": 0.01974916271865368,
+        "tensor": "model.language_model.layers.39.mlp.experts.104.up_proj"
+      },
+      {
+        "dead_channels": 3,
+        "expert": 176,
+        "flag": false,
+        "layer": 0,
+        "rel_l2": 0.019742915406823158,
+        "tensor": "model.language_model.layers.0.mlp.experts.176.up_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 6,
+        "flag": false,
+        "layer": 32,
+        "rel_l2": 0.01972922310233116,
+        "tensor": "model.language_model.layers.32.mlp.experts.6.up_proj"
+      },
+      {
+        "dead_channels": 6,
+        "expert": 229,
+        "flag": false,
+        "layer": 0,
+        "rel_l2": 0.01972820982336998,
+        "tensor": "model.language_model.layers.0.mlp.experts.229.up_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 165,
+        "flag": false,
+        "layer": 33,
+        "rel_l2": 0.019701166078448296,
+        "tensor": "model.language_model.layers.33.mlp.experts.165.up_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 13,
+        "flag": false,
+        "layer": 33,
+        "rel_l2": 0.0196741484105587,
+        "tensor": "model.language_model.layers.33.mlp.experts.13.up_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 8,
+        "flag": false,
+        "layer": 32,
+        "rel_l2": 0.019646383821964264,
+        "tensor": "model.language_model.layers.32.mlp.experts.8.up_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 173,
+        "flag": false,
+        "layer": 32,
+        "rel_l2": 0.019629552960395813,
+        "tensor": "model.language_model.layers.32.mlp.experts.173.up_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 114,
+        "flag": false,
+        "layer": 32,
+        "rel_l2": 0.019628075882792473,
+        "tensor": "model.language_model.layers.32.mlp.experts.114.up_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": 136,
+        "flag": false,
+        "layer": 33,
+        "rel_l2": 0.019617093726992607,
+        "tensor": "model.language_model.layers.33.mlp.experts.136.up_proj"
+      }
+    ],
+    "K8|linear_attn.in_proj_qkv": [
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 0,
+        "rel_l2": 0.007341356948018074,
+        "tensor": "model.language_model.layers.0.linear_attn.in_proj_qkv"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 38,
+        "rel_l2": 0.006276044063270092,
+        "tensor": "model.language_model.layers.38.linear_attn.in_proj_qkv"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 37,
+        "rel_l2": 0.005824977532029152,
+        "tensor": "model.language_model.layers.37.linear_attn.in_proj_qkv"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 24,
+        "rel_l2": 0.0055940840393304825,
+        "tensor": "model.language_model.layers.24.linear_attn.in_proj_qkv"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 12,
+        "rel_l2": 0.005488316994160414,
+        "tensor": "model.language_model.layers.12.linear_attn.in_proj_qkv"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 36,
+        "rel_l2": 0.005476862192153931,
+        "tensor": "model.language_model.layers.36.linear_attn.in_proj_qkv"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 32,
+        "rel_l2": 0.005464671179652214,
+        "tensor": "model.language_model.layers.32.linear_attn.in_proj_qkv"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 1,
+        "rel_l2": 0.0054592592641711235,
+        "tensor": "model.language_model.layers.1.linear_attn.in_proj_qkv"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 33,
+        "rel_l2": 0.005450319033116102,
+        "tensor": "model.language_model.layers.33.linear_attn.in_proj_qkv"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 10,
+        "rel_l2": 0.00543961301445961,
+        "tensor": "model.language_model.layers.10.linear_attn.in_proj_qkv"
+      }
+    ],
+    "K8|linear_attn.in_proj_z": [
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 36,
+        "rel_l2": 0.007146675139665604,
+        "tensor": "model.language_model.layers.36.linear_attn.in_proj_z"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 34,
+        "rel_l2": 0.006519794464111328,
+        "tensor": "model.language_model.layers.34.linear_attn.in_proj_z"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 26,
+        "rel_l2": 0.006264771334826946,
+        "tensor": "model.language_model.layers.26.linear_attn.in_proj_z"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 18,
+        "rel_l2": 0.0062409923411905766,
+        "tensor": "model.language_model.layers.18.linear_attn.in_proj_z"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 29,
+        "rel_l2": 0.006164408754557371,
+        "tensor": "model.language_model.layers.29.linear_attn.in_proj_z"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 32,
+        "rel_l2": 0.0061188386753201485,
+        "tensor": "model.language_model.layers.32.linear_attn.in_proj_z"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 38,
+        "rel_l2": 0.0060053435154259205,
+        "tensor": "model.language_model.layers.38.linear_attn.in_proj_z"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 30,
+        "rel_l2": 0.005970892962068319,
+        "tensor": "model.language_model.layers.30.linear_attn.in_proj_z"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 33,
+        "rel_l2": 0.005918869283050299,
+        "tensor": "model.language_model.layers.33.linear_attn.in_proj_z"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 37,
+        "rel_l2": 0.0058976346626877785,
+        "tensor": "model.language_model.layers.37.linear_attn.in_proj_z"
+      }
+    ],
+    "K8|linear_attn.out_proj": [
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 2,
+        "rel_l2": 0.006469741929322481,
+        "tensor": "model.language_model.layers.2.linear_attn.out_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 1,
+        "rel_l2": 0.006451888009905815,
+        "tensor": "model.language_model.layers.1.linear_attn.out_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 36,
+        "rel_l2": 0.006140571087598801,
+        "tensor": "model.language_model.layers.36.linear_attn.out_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 38,
+        "rel_l2": 0.0060801394283771515,
+        "tensor": "model.language_model.layers.38.linear_attn.out_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 34,
+        "rel_l2": 0.006048883777111769,
+        "tensor": "model.language_model.layers.34.linear_attn.out_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 0,
+        "rel_l2": 0.006000165361911058,
+        "tensor": "model.language_model.layers.0.linear_attn.out_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 14,
+        "rel_l2": 0.00592547282576561,
+        "tensor": "model.language_model.layers.14.linear_attn.out_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 10,
+        "rel_l2": 0.005896809045225382,
+        "tensor": "model.language_model.layers.10.linear_attn.out_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 37,
+        "rel_l2": 0.0058579221367836,
+        "tensor": "model.language_model.layers.37.linear_attn.out_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 5,
+        "rel_l2": 0.005849567707628012,
+        "tensor": "model.language_model.layers.5.linear_attn.out_proj"
+      }
+    ],
+    "K8|mlp.shared_expert.down_proj": [
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 31,
+        "rel_l2": 0.00588332861661911,
+        "tensor": "model.language_model.layers.31.mlp.shared_expert.down_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 30,
+        "rel_l2": 0.005776866804808378,
+        "tensor": "model.language_model.layers.30.mlp.shared_expert.down_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 39,
+        "rel_l2": 0.005764147732406855,
+        "tensor": "model.language_model.layers.39.mlp.shared_expert.down_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 35,
+        "rel_l2": 0.005742304492741823,
+        "tensor": "model.language_model.layers.35.mlp.shared_expert.down_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 34,
+        "rel_l2": 0.0056854067370295525,
+        "tensor": "model.language_model.layers.34.mlp.shared_expert.down_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 24,
+        "rel_l2": 0.005646953359246254,
+        "tensor": "model.language_model.layers.24.mlp.shared_expert.down_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 33,
+        "rel_l2": 0.005573535803705454,
+        "tensor": "model.language_model.layers.33.mlp.shared_expert.down_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 32,
+        "rel_l2": 0.005534345284104347,
+        "tensor": "model.language_model.layers.32.mlp.shared_expert.down_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 28,
+        "rel_l2": 0.0055026160553097725,
+        "tensor": "model.language_model.layers.28.mlp.shared_expert.down_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 37,
+        "rel_l2": 0.00544915022328496,
+        "tensor": "model.language_model.layers.37.mlp.shared_expert.down_proj"
+      }
+    ],
+    "K8|mlp.shared_expert.gate_proj": [
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 35,
+        "rel_l2": 0.005972780752927065,
+        "tensor": "model.language_model.layers.35.mlp.shared_expert.gate_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 27,
+        "rel_l2": 0.005538309458643198,
+        "tensor": "model.language_model.layers.27.mlp.shared_expert.gate_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 26,
+        "rel_l2": 0.005472490563988686,
+        "tensor": "model.language_model.layers.26.mlp.shared_expert.gate_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 0,
+        "rel_l2": 0.005449168384075165,
+        "tensor": "model.language_model.layers.0.mlp.shared_expert.gate_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 20,
+        "rel_l2": 0.005404127761721611,
+        "tensor": "model.language_model.layers.20.mlp.shared_expert.gate_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 17,
+        "rel_l2": 0.0053836447186768055,
+        "tensor": "model.language_model.layers.17.mlp.shared_expert.gate_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 13,
+        "rel_l2": 0.005380270536988974,
+        "tensor": "model.language_model.layers.13.mlp.shared_expert.gate_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 12,
+        "rel_l2": 0.005361774004995823,
+        "tensor": "model.language_model.layers.12.mlp.shared_expert.gate_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 36,
+        "rel_l2": 0.005345979705452919,
+        "tensor": "model.language_model.layers.36.mlp.shared_expert.gate_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 8,
+        "rel_l2": 0.005335939582437277,
+        "tensor": "model.language_model.layers.8.mlp.shared_expert.gate_proj"
+      }
+    ],
+    "K8|mlp.shared_expert.up_proj": [
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 39,
+        "rel_l2": 0.005631390959024429,
+        "tensor": "model.language_model.layers.39.mlp.shared_expert.up_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 21,
+        "rel_l2": 0.005562548525631428,
+        "tensor": "model.language_model.layers.21.mlp.shared_expert.up_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 28,
+        "rel_l2": 0.005524457897990942,
+        "tensor": "model.language_model.layers.28.mlp.shared_expert.up_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 0,
+        "rel_l2": 0.005477826576679945,
+        "tensor": "model.language_model.layers.0.mlp.shared_expert.up_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 38,
+        "rel_l2": 0.005477140657603741,
+        "tensor": "model.language_model.layers.38.mlp.shared_expert.up_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 33,
+        "rel_l2": 0.005463370122015476,
+        "tensor": "model.language_model.layers.33.mlp.shared_expert.up_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 8,
+        "rel_l2": 0.005455729551613331,
+        "tensor": "model.language_model.layers.8.mlp.shared_expert.up_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 27,
+        "rel_l2": 0.005454903468489647,
+        "tensor": "model.language_model.layers.27.mlp.shared_expert.up_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 3,
+        "rel_l2": 0.0053381710313260555,
+        "tensor": "model.language_model.layers.3.mlp.shared_expert.up_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 22,
+        "rel_l2": 0.005326520185917616,
+        "tensor": "model.language_model.layers.22.mlp.shared_expert.up_proj"
+      }
+    ],
+    "K8|self_attn.k_proj": [
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 31,
+        "rel_l2": 0.005382574629038572,
+        "tensor": "model.language_model.layers.31.self_attn.k_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 27,
+        "rel_l2": 0.005348848644644022,
+        "tensor": "model.language_model.layers.27.self_attn.k_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 23,
+        "rel_l2": 0.005323626101016998,
+        "tensor": "model.language_model.layers.23.self_attn.k_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 35,
+        "rel_l2": 0.00531016057357192,
+        "tensor": "model.language_model.layers.35.self_attn.k_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 11,
+        "rel_l2": 0.005306310951709747,
+        "tensor": "model.language_model.layers.11.self_attn.k_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 15,
+        "rel_l2": 0.005240861792117357,
+        "tensor": "model.language_model.layers.15.self_attn.k_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 3,
+        "rel_l2": 0.005199647042900324,
+        "tensor": "model.language_model.layers.3.self_attn.k_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 19,
+        "rel_l2": 0.00516848498955369,
+        "tensor": "model.language_model.layers.19.self_attn.k_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 39,
+        "rel_l2": 0.005150357726961374,
+        "tensor": "model.language_model.layers.39.self_attn.k_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 7,
+        "rel_l2": 0.005136212799698114,
+        "tensor": "model.language_model.layers.7.self_attn.k_proj"
+      }
+    ],
+    "K8|self_attn.o_proj": [
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 23,
+        "rel_l2": 0.006208403967320919,
+        "tensor": "model.language_model.layers.23.self_attn.o_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 3,
+        "rel_l2": 0.006172784138470888,
+        "tensor": "model.language_model.layers.3.self_attn.o_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 7,
+        "rel_l2": 0.006100043188780546,
+        "tensor": "model.language_model.layers.7.self_attn.o_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 31,
+        "rel_l2": 0.00592940766364336,
+        "tensor": "model.language_model.layers.31.self_attn.o_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 39,
+        "rel_l2": 0.00590916071087122,
+        "tensor": "model.language_model.layers.39.self_attn.o_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 27,
+        "rel_l2": 0.0058953892439603806,
+        "tensor": "model.language_model.layers.27.self_attn.o_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 11,
+        "rel_l2": 0.005863825790584087,
+        "tensor": "model.language_model.layers.11.self_attn.o_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 15,
+        "rel_l2": 0.005810289178043604,
+        "tensor": "model.language_model.layers.15.self_attn.o_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 19,
+        "rel_l2": 0.005787343252450228,
+        "tensor": "model.language_model.layers.19.self_attn.o_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 35,
+        "rel_l2": 0.0056761824525892735,
+        "tensor": "model.language_model.layers.35.self_attn.o_proj"
+      }
+    ],
+    "K8|self_attn.q_proj": [
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 35,
+        "rel_l2": 0.008872535079717636,
+        "tensor": "model.language_model.layers.35.self_attn.q_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 27,
+        "rel_l2": 0.007248481269925833,
+        "tensor": "model.language_model.layers.27.self_attn.q_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 15,
+        "rel_l2": 0.006872933823615313,
+        "tensor": "model.language_model.layers.15.self_attn.q_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 19,
+        "rel_l2": 0.006745467893779278,
+        "tensor": "model.language_model.layers.19.self_attn.q_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 31,
+        "rel_l2": 0.006640084087848663,
+        "tensor": "model.language_model.layers.31.self_attn.q_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 39,
+        "rel_l2": 0.006262871902436018,
+        "tensor": "model.language_model.layers.39.self_attn.q_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 3,
+        "rel_l2": 0.006226860918104649,
+        "tensor": "model.language_model.layers.3.self_attn.q_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 23,
+        "rel_l2": 0.0059080119244754314,
+        "tensor": "model.language_model.layers.23.self_attn.q_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 7,
+        "rel_l2": 0.005836057476699352,
+        "tensor": "model.language_model.layers.7.self_attn.q_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 11,
+        "rel_l2": 0.00568940956145525,
+        "tensor": "model.language_model.layers.11.self_attn.q_proj"
+      }
+    ],
+    "K8|self_attn.v_proj": [
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 39,
+        "rel_l2": 0.005533447954803705,
+        "tensor": "model.language_model.layers.39.self_attn.v_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 27,
+        "rel_l2": 0.005484673194587231,
+        "tensor": "model.language_model.layers.27.self_attn.v_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 23,
+        "rel_l2": 0.00538728479295969,
+        "tensor": "model.language_model.layers.23.self_attn.v_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 15,
+        "rel_l2": 0.0053526111878454685,
+        "tensor": "model.language_model.layers.15.self_attn.v_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 7,
+        "rel_l2": 0.005288631189614534,
+        "tensor": "model.language_model.layers.7.self_attn.v_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 11,
+        "rel_l2": 0.0052755651995539665,
+        "tensor": "model.language_model.layers.11.self_attn.v_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 19,
+        "rel_l2": 0.005210972856730223,
+        "tensor": "model.language_model.layers.19.self_attn.v_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 35,
+        "rel_l2": 0.005195485893636942,
+        "tensor": "model.language_model.layers.35.self_attn.v_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 3,
+        "rel_l2": 0.005180798005312681,
+        "tensor": "model.language_model.layers.3.self_attn.v_proj"
+      },
+      {
+        "dead_channels": 0,
+        "expert": null,
+        "flag": false,
+        "layer": 31,
+        "rel_l2": 0.005129785742610693,
+        "tensor": "model.language_model.layers.31.self_attn.v_proj"
+      }
+    ]
+  }
+}

@@ -1,0 +1,61 @@
+# Serving profiles. Selected with PROFILE=<name> or ./run.sh --profile <name>.
+# Subset-YAML only (scripts/miniyaml.py). Model facts live in config/model.yaml;
+# the preflight memory arithmetic combines both (scripts/cfg.py need <profile>).
+#
+#   window_tokens         context window the server advertises (/v1/models max_model_len)
+#                         and the KV cache is sized for (total tokens across all sequences)
+#   kv_bits               16 = fp16 KV cache; 2..8 = ExLlamaV3 quantised KV cache (k_bits = v_bits)
+#   max_batch_size        concurrent sequences the generator may batch (1 = FIFO)
+#   chunk_size            prefill chunk (tokens per forward pass during prompt ingestion)
+#   recurrent_cache_gib   host-side recurrent-state checkpoint store (prefix reuse), unified memory
+#   workspace_gib         activations, MoE staging, CUDA context and allocator slack
+#   headroom_gib          what must stay free in MemAvailable on top of the above
+#   default_max_tokens    completion cap when a request names none (also capped by the window)
+schema: 1
+
+default: gb10-text-262k
+
+profiles:
+  gb10-text-262k:
+    description: Full 262,144-token window, fp16 KV cache, one sequence (the default)
+    window_tokens: 262144
+    kv_bits: 16
+    max_batch_size: 1
+    chunk_size: 2048
+    recurrent_cache_gib: 1.0
+    workspace_gib: 4.0
+    headroom_gib: 8.0
+    default_max_tokens: 4096
+
+  gb10-text-262k-b4:
+    description: EXPERIMENTAL. Full window with up to 4 sequences batched (aggregate decode about 2x). Greedy output is not token-identical to serial decoding (docs/QUALIFICATION.md), so it is not the qualified setting
+    window_tokens: 262144
+    kv_bits: 16
+    max_batch_size: 4
+    chunk_size: 2048
+    recurrent_cache_gib: 1.0
+    workspace_gib: 4.0
+    headroom_gib: 8.0
+    default_max_tokens: 4096
+
+  gb10-text-32k:
+    description: 32,768-token window, fp16 KV cache, one sequence (4.4 GiB of KV cache less than the full window)
+    window_tokens: 32768
+    kv_bits: 16
+    max_batch_size: 1
+    chunk_size: 2048
+    recurrent_cache_gib: 1.0
+    workspace_gib: 3.0
+    headroom_gib: 8.0
+    default_max_tokens: 4096
+
+  gb10-text-16k-lowmem:
+    description: 16,384-token window, 1,024-token prefill chunks, small host recurrent cache (smallest footprint)
+    window_tokens: 16384
+    kv_bits: 16
+    max_batch_size: 1
+    chunk_size: 1024
+    recurrent_cache_gib: 0.25
+    workspace_gib: 2.0
+    headroom_gib: 6.0
+    default_max_tokens: 2048

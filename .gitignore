@@ -1,0 +1,11 @@
+.state/
+.venv/
+models/
+.cache/
+__pycache__/
+*.pyc
+*.env
+/logs/
+.pytest_cache/
+eval/.kit/
+.state-test/

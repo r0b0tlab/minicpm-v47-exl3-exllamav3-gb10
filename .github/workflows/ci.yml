@@ -1,0 +1,25 @@
+name: ci
+on:
+  push:
+  pull_request:
+jobs:
+  offline:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: dependencies for the offline tests
+        run: python -m pip install jinja2 pyyaml
+      - name: shell syntax and shellcheck
+        run: |
+          for f in run.sh scripts/*.sh eval/*.sh eval/q200/*.sh; do bash -n "$f"; done
+          sudo apt-get install -y shellcheck
+          shellcheck -x run.sh scripts/*.sh eval/*.sh eval/q200/*.sh
+      - name: unit tests (no GPU)
+        run: python -m unittest discover -s tests -t . -v
+      - name: protocol tree check
+        run: python scripts/verify_tree.py
+      - name: public vocabulary check
+        run: bash scripts/check_public.sh

@@ -1,0 +1,71 @@
+{
+  "stages": {
+    "preflight": {
+      "seconds": 1,
+      "note": "11 checks: aarch64, driver 580.173.02, GB10 12.1, idle GPU, toolchain, Python 3.12.3, nvcc 13.0.88, disk, MemAvailable, port"
+    },
+    "venv": {
+      "seconds": 2,
+      "note": "python -m venv with the system Python 3.12.3"
+    },
+    "torch": {
+      "seconds": 100,
+      "note": "torch 2.14.0+cu130 aarch64 wheel and the pinned requirements"
+    },
+    "build": {
+      "seconds": 126,
+      "note": "ExLlamaV3 4d083d25c1a3 fetched by commit, compiled for sm_121 with 20 jobs, wheel cached by (commit, torch, Python, arch)"
+    },
+    "download": {
+      "seconds": 34,
+      "note": "draft repository (451 MB, anonymous, 8 workers) including one HTTP 429 retried after 15 s; target: 1 s for the 12 small files missing next to the hard-linked shards"
+    },
+    "verify-model": {
+      "seconds": 4,
+      "note": "28 files, 26.4 GiB hashed, sizes and sha256 against config/model.yaml (page cache warm); a second run with unchanged files re-hashes nothing"
+    },
+    "retire-cache": {
+      "seconds": 2,
+      "note": "25.9 GiB of shard pages retired (residency after: 0 MiB), MemFree 71.6 GiB"
+    },
+    "serve": {
+      "seconds": 16,
+      "note": "load of the 26 GiB pack and a 262,144-token fp16 KV cache, /health ready"
+    },
+    "smoke": {
+      "seconds": 9,
+      "note": "3 requests: text, thinking on/off with stream parity, long-prompt retrieval, image part 400"
+    }
+  },
+  "conditions": "Cold first run; the stages total about 5 minutes plus the pack download, which is bounded by the link (28.3 GB). Sum of the listed stage durations, excluding the target download: 294 s.",
+  "second_checkout": {
+    "description": "A second fresh checkout (new directory, new venv) on the same machine with the shared cache directory: the compiled wheel is reused, the pack directory already holds the verified shards.",
+    "stages": {
+      "preflight": {
+        "seconds": 1,
+        "note": "nvcc not required (cached wheel)"
+      },
+      "venv": {
+        "seconds": 2,
+        "note": ""
+      },
+      "torch": {
+        "seconds": 37,
+        "note": "torch wheel and requirements from pip's wheel cache"
+      },
+      "build": {
+        "seconds": 4,
+        "note": "cache hit on 4d083d25c1a3-torch2.14.0cu130-py3.12-sm121: pip install of the cached wheel, import check"
+      },
+      "download": {
+        "seconds": 0,
+        "note": "files already present"
+      },
+      "verify-model": {
+        "seconds": 7,
+        "note": "28 files, 26.4 GiB hashed (page cache warm)"
+      }
+    },
+    "total_seconds": 51
+  }
+}

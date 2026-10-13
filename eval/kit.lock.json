@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "kit": "r0b0bench / Q200v2",
+  "repo": "https://github.com/r0b0tlab/r0b0bench",
+  "commit": "60649b74f4dd015faba40a0dc2bad8e4efa5d484",
+  "subset": "subsets/q200v2",
+  "manifest": "MANIFEST.sha256",
+  "dataset": "artifacts/quality-text-180-v2.jsonl",
+  "dataset_sha256": "66a75701cbeea69f212e1c8be92aab9efaf3fa4d7af3c6911c8f7864a17d8d14",
+  "rows": 180,
+  "families": {"gsm8k": 80, "humaneval": 40, "ifeval": 40, "hard_reasoning": 20}
+}

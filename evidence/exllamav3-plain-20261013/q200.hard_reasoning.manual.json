@@ -1,0 +1,129 @@
+{
+ "schema": "r0b0tlab.qwen38.manual_evidence.v1",
+ "dataset_sha256": "66a75701cbeea69f212e1c8be92aab9efaf3fa4d7af3c6911c8f7864a17d8d14",
+ "run_identity_sha256": "68b375a3699056988163f78a84783c8f5a3abd40b5b65e4dc19169c6ac39b8de",
+ "reviewer": "the builder of this run (an AI coding agent), item by item against the kit's reference answers; not an independent human review",
+ "method": "independent_manual_review",
+ "rows": [
+  {
+   "id": "hard-00",
+   "content_sha256": "233e852cd39c26862af6d7e842f7573851cdd0a5b98c6a68c2b07905bb041f63",
+   "passed": true,
+   "rationale": "n^3-n = (n-1)n(n+1) proved divisible by 2 and 3 hence 6; for prime p>3 states and proves 24 | p^3-p (8 from two consecutive evens, 3 since p is not divisible by 3): contains the reference claim"
+  },
+  {
+   "id": "hard-01",
+   "content_sha256": "4293f9337e90827319de9a774e2959dfe1eb444ed06bf506aab093a06e4fadeb",
+   "passed": true,
+   "rationale": "13/4 derived by the symmetry argument and checked with (N+1)/(G+1)"
+  },
+  {
+   "id": "hard-02",
+   "content_sha256": "36fb9ba86fcef03a070c3a7eafea6a40f80707515507d473dd8947edda6a9d5a",
+   "passed": true,
+   "rationale": "all four pairs (11,4), (13,8), (19,16), (53,52) from the odd factor pairs of 105; none missing, none extra"
+  },
+  {
+   "id": "hard-03",
+   "content_sha256": "083f892786a7dd156be2ed2fddbe67ffcf60af3193fa82dd7878655361bed26d",
+   "passed": true,
+   "rationale": "five sentences (counted), valid proof by contradiction through the evenness of a and then b"
+  },
+  {
+   "id": "hard-04",
+   "content_sha256": "5abe5f74d2538368879eceefec88abda09e1a2a43e3fdb948f56075d11664698",
+   "passed": true,
+   "rationale": "1/6048000, derived from the product formula with a consistent prime factorisation (256*27*125*7 = 6,048,000)"
+  },
+  {
+   "id": "hard-05",
+   "content_sha256": "534396559eaa23f8c703b1a47a1cffc7c14efd81ab28ca1e740fd5314e45b60d",
+   "passed": true,
+   "rationale": "V_n = V_{n-1} - 4 with V_0 = 100, empties after 25 hours"
+  },
+  {
+   "id": "hard-06",
+   "content_sha256": "14abe1f72fba436422e2b9e8848e72073cf007fed431c8234ff34b34cd988fb2",
+   "passed": true,
+   "rationale": "heapify Theta(n), mergesort Theta(n log n), quicksort Theta(n^2), binary search Theta(log n), BFS on a tree Theta(n), each with a one-clause justification, ordered correctly"
+  },
+  {
+   "id": "hard-07",
+   "content_sha256": "fe40ad2203ce322dcd14c38f81ac481a238b71b15f4eb3ba1d82c3030f76e0e0",
+   "passed": true,
+   "rationale": "3/10 by counting (C(9,2)/C(10,3)) and by symmetry"
+  },
+  {
+   "id": "hard-08",
+   "content_sha256": "e83ddc36ed645cb5ec503d742f7f5e2d1d5b9c11742b368284135c5665fa468b",
+   "passed": true,
+   "rationale": "29 (Frobenius number 6*7-6-7)"
+  },
+  {
+   "id": "hard-09",
+   "content_sha256": "aa30f06283632274a401ae88c4dd10053d23571e71d39e21ee1b44e2099370af",
+   "passed": true,
+   "rationale": "3 states with remainder transitions (2r+b) mod 3, accept remainder 0, distinguishability argument given"
+  },
+  {
+   "id": "hard-10",
+   "content_sha256": "a9b243d3c8bd0a83cec90853f8aa4bd5c8e2f8394e4c338a4bb9cb427e01fc8e",
+   "passed": true,
+   "rationale": "2 (Gamma(3))"
+  },
+  {
+   "id": "hard-11",
+   "content_sha256": "01cfee5e61b4e56fb4c4a95ec0a6538b28b992ddf39294d6e97ec4d93042f508",
+   "passed": true,
+   "rationale": "f'(1) = 1 by logarithmic differentiation, derivation correct"
+  },
+  {
+   "id": "hard-12",
+   "content_sha256": "244ef73ff15c2d045fae7ec6154f57b27c0528b0d171cc517a441a32ecaaec9e",
+   "passed": true,
+   "rationale": "true for finite graphs with a correct longest-path proof; states and proves the infinite path counterexample"
+  },
+  {
+   "id": "hard-13",
+   "content_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "passed": false,
+   "rationale": "no answer: generation reached the 8,192-token ceiling inside the reasoning block (finish_reason length, empty content)"
+  },
+  {
+   "id": "hard-14",
+   "content_sha256": "df7df06d9eeb0ec563574cc5ab3e74da67a89521762f29c5220d7dad381a51d3",
+   "passed": true,
+   "rationale": "256 = 2^8, one free choice per complementary pair of the 16 inputs"
+  },
+  {
+   "id": "hard-15",
+   "content_sha256": "1e37d906873bf7fa4a1f4d46c6792b6391821c401ab117cdbbc487f34be07746",
+   "passed": true,
+   "rationale": "0 = (1-1)^17"
+  },
+  {
+   "id": "hard-16",
+   "content_sha256": "73c339a2a42a0e1dbd3a0bf2549c1fa200c42dd8f532d3f777e1af8fcf5ecd8d",
+   "passed": true,
+   "rationale": "1/(2*pi) m, independent of R"
+  },
+  {
+   "id": "hard-17",
+   "content_sha256": "65ff89cc958994515d2bbbfc08d32382bf28b7c337ba2f11d247481d8c8c14c6",
+   "passed": true,
+   "rationale": "identifies the look-and-say sequence and its recursive definition (the reference accepts this)"
+  },
+  {
+   "id": "hard-18",
+   "content_sha256": "1e56a5f7babdd274a61b98647a63c65beae25679fbc2e7e072f4a5f0a9c86334",
+   "passed": true,
+   "rationale": "pigeonhole on the four half-side squares, diagonal sqrt(2)/2"
+  },
+  {
+   "id": "hard-19",
+   "content_sha256": "6669d6dcaa771c22b6cf577df3f7f09d27af40f7928f6087ede9e81859c312e5",
+   "passed": true,
+   "rationale": "2/6 = 1/3, outcomes enumerated"
+  }
+ ]
+}

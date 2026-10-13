@@ -1,0 +1,180 @@
+# Model facts for the model-agnostic click-run driver.
+# Everything the shell scripts, the preflight memory arithmetic and the server
+# need to know about THIS model lives here; adding another model is a data-only
+# change (see docs/PROTOCOL.md, "Adopting the protocol").
+# Subset-YAML only (scripts/miniyaml.py): block maps, block lists, flow lists.
+schema: 1
+
+model:
+  # name reported by GET /v1/models and accepted in the "model" request field
+  served_name: minicpm-v-4.7-35b-a3b-exl3-6.08bpw
+  family: MiniCPM-V-4.7-35B-A3B
+  base_model: openbmb/MiniCPM-V-4.7-35B-A3B
+  base_revision: 4c7623a9326e0f74313bbc7292d852a9e3018a70
+  license: apache-2.0
+  # config.json "architectures[0]" the engine must recognise
+  arch: MiniCPMV4_7ForConditionalGeneration
+  vocab_size: 248144
+  max_position_embeddings: 262144
+  # modalities this runtime serves (the checkpoint itself also does image/video)
+  modalities_served: [text]
+  modalities_model: [text, image, video]
+  # memory arithmetic inputs (docs/MEMORY.md derives each number)
+  kv_bytes_per_token: 20480        # fp16 K+V, 10 full-attention layers x 2 x 2 KV heads x 256 x 2 B
+  recurrent_state_bytes: 64389120  # gated-delta-net state per sequence slot, independent of context
+  full_attention_layers: 10
+  weights_bytes: 28296977900
+  weights_gib: 26.35
+  # chat template facts (chat_template.jinja ships inside the pack)
+  chat_template: chat_template.jinja
+  thinking_default: true
+  thinking_kwarg: enable_thinking
+  thinking_kwarg_aliases: [thinking]
+  think_open: "<think>\n"
+  think_end: "</think>"
+  tool_call_format: qwen_xml
+  # generation defaults (the pack's generation_config.json)
+  sampling_defaults:
+    temperature: 1.0
+    top_k: 20
+    top_p: 0.95
+  # tokens that end a turn: <|im_end|>, <|endoftext|>
+  stop_token_ids: [248046, 248044]
+  stop_strings: ["<|im_end|>"]
+  # ids >= vocab_size are padding columns of the output head and must never be sampled
+  max_generated_id: 248143
+
+artifacts:
+  target:
+    hf_repo: r0b0tlab/MiniCPM-V-4.7-35B-A3B-EXL3-6.08bpw
+    revision: 8f9f07872b09846f2e14b3c908e99be1ccf3402a
+    local_dir: MiniCPM-V-4.7-35B-A3B-EXL3-6.08bpw
+    required: true
+    total_bytes: 28371172796
+    files:
+      CONVERT.md:
+        size: 2363
+        sha256: 26626068500d467023b97ec612c38ef947d2722af8e3922f6be955d18b2157e8
+      LICENSE:
+        size: 11358
+        sha256: cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30
+      NOTICE:
+        size: 2461
+        sha256: ed07481f528bf4c7684fb7b9ae2fbebe4d15bd569fb81887010a6f51057d36be
+      README.md:
+        size: 29248
+        sha256: af35d2876836c47c1065f84cdd4061942ba7608b871a2b1db213db04d6d60a45
+      calibration.json:
+        size: 78
+        sha256: 08d231bb0567634dc9c2e6a1a11a74a060813d5a898b5c7b6f1f0a9c63019999
+      calibration.md:
+        size: 674
+        sha256: acbf9851e6f0aee2d8dc5e029394832f3c27a5f8fc017c7ce920653ab7410231
+      chat_template.jinja:
+        size: 7250
+        sha256: c4531cacbf2a0ab65170433d7a4f371d11b7599cf96c04b192e6372432636c70
+      config.json:
+        size: 3951
+        sha256: b332cdb7ca068987fb6c74e42aef874cd9821b3ca89d3556b1e31a4469be72b0
+      exl3_retry_log.json:
+        size: 344
+        sha256: 9fb40e5040359991f6c75e6c48b3a294bf34b29569539c23029b758c11b13668
+      generation_config.json:
+        size: 186
+        sha256: 7fa47217744f0e0918f6cf846e7541e4f322e6bc66917044cf2ad580699216c8
+      kl.json:
+        size: 257804
+        sha256: b510a36bb60e23f8dfbf90aad2e59b886d67e53f719e7c4c899fd967663a2449
+      model-00001-of-00008.safetensors:
+        size: 4242152212
+        sha256: e35037215430c76bbd841a5f39ebe6f5759b421909f29faa90f4dd3119a964b7
+      model-00002-of-00008.safetensors:
+        size: 3872221415
+        sha256: 165c85ab89c74950842728ca8122894301ffbc90d8155b1b3ebc915e93836674
+      model-00003-of-00008.safetensors:
+        size: 3865616258
+        sha256: a1ba7fca2d96d71c4c82cd1db909caaf52eb9b9840eec9ab779e5f236e8459bc
+      model-00004-of-00008.safetensors:
+        size: 3872236945
+        sha256: 0c6743519751398d1088f7f501147760f04a9789162db017aa5429e4d77d867f
+      model-00005-of-00008.safetensors:
+        size: 3865616258
+        sha256: eb197338fb6838cd8740174f804ccdd669cc68ddd2ba8d9e4dc878cd84c6d3b1
+      model-00006-of-00008.safetensors:
+        size: 3872236945
+        sha256: aff890e36675821474595ad28b7e9d9556d2cf7f56e66746f2637fedf61b6767
+      model-00007-of-00008.safetensors:
+        size: 4292015100
+        sha256: 8bb73fb2bd4ce673695cb4bc889c6d2c948d0e69f5ff88c327295d7003fb880f
+      model-00008-of-00008.safetensors:
+        size: 414882767
+        sha256: 8ef5f1cd7b36bbc4d428c7e700843fabbe1bfa72d724dd08427cfaa2e4926ce9
+      model.safetensors.index.json:
+        size: 13450633
+        sha256: a621148b7afc205069c98cdb9fb956363a49ed05dd519f40bf4865dd7acdc92c
+      preprocessor_config.json:
+        size: 148
+        sha256: c64289d04f36e48d9d059e3a0069f54062b2ef6044a807adb448b98449cb54de
+      processor_config.json:
+        size: 2
+        sha256: 44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+      quantization_config.json:
+        size: 40377713
+        sha256: 5ea9d03ecdba23a7f9917c9e553d5737dda9cc32e553b6e437db005e87310941
+      rel_l2_scan.json:
+        size: 34848
+        sha256: 05fa68ca0a0efd391af1d98b72200abad2fca0d49cf9511246a91cada38ec0f9
+      support/exllamav3/README.md:
+        size: 739
+        sha256: e96742dbc5e4a82caf1ca0f4a210bfeee2daf54b7b55c08574c3a45584826342
+      support/exllamav3/minicpmv4_7.py:
+        size: 4185
+        sha256: 6cc291bc2803cdcb4d29521f99811ff2913141c3aa9fb96f13c2d11aaf5eb81d
+      tokenizer.json:
+        size: 20001935
+        sha256: e4608c5d7b3f4f30ba83be16a82cdac856b2e7191d40f0a08cbacc76c2a926ee
+      tokenizer_config.json:
+        size: 8976
+        sha256: 03c8faa31145d89c815b86dffc9aa7fa732ebebb5cb1a47b1663c17d0477eab9
+  draft:
+    # DSpark block drafter. ExLlamaV3 cannot run it (README: "What runs where");
+    # it is downloaded only with --with-draft, for engines that implement DSpark.
+    hf_repo: r0b0tlab/MiniCPM-V-4.7-35B-A3B-DSpark-EXL3-6.00bpw
+    revision: 34c6b7758cbe79b4e8023b2007b93ecc2f026bf3
+    local_dir: MiniCPM-V-4.7-35B-A3B-DSpark-EXL3-6.00bpw
+    required: false
+    total_bytes: 451286036
+    files:
+      CONVERT.md:
+        size: 2289
+        sha256: 62aa7de3c56270f35bd615a44e974850044ce39fcd3e3cabc135b0ff68202b83
+      LICENSE:
+        size: 11358
+        sha256: cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30
+      NOTICE:
+        size: 1727
+        sha256: cb54af2c08bce56ff32b807c01416957b94eec0f2cc3978b34b581cb1d087183
+      README.md:
+        size: 14531
+        sha256: d6cb2c3dcbc1dc81328dc56b7c691dc8fbd0cbe67459f33e267bfde06202fd4a
+      SWEEP.tsv:
+        size: 698
+        sha256: e22437a2fb72c2bf1d7599cbf2dfaaa91c0395b31729c97405d9e212140efa64
+      calibration.md:
+        size: 201
+        sha256: 9d34af583de8003675941aa2d81eccd6057ad0870b0aad3977dbccf20c188db4
+      config.json:
+        size: 1873
+        sha256: 5d010326a72ddae21d126d8a86bf5ffc829e6550177f141618069e60e3d7a8fb
+      model.safetensors:
+        size: 451186749
+        sha256: 728cdd789e20c142f1085e16f8381973f3a7018d4fabcbc776c13b6e77eff964
+      pack_layout.tsv:
+        size: 3582
+        sha256: 5839355dfeba5edf18b9f206bb66acf3ed6d34eac84f0f58e62fe43743d719f3
+      quantization_config.json:
+        size: 48749
+        sha256: 28c6e3b9784a7390b15dbccf0f8e7a2ddd9da836a395be6f1089026f0a6714a4
+      verify_report.json:
+        size: 14279
+        sha256: 3e7a19de614d224329037e1470343548edeac6df0280ffe9f70b7582bd05ed5b

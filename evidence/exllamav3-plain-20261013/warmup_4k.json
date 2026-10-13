@@ -1,0 +1,58 @@
+{
+ "description": "One freshly started server, requests in this order: 5 cold prefills at 4,096 tokens, 3 at 1,024, 5 at 4,096 again (128 new tokens each).",
+ "sets": [
+  {
+   "label": "4,096 tokens, first visit after server start",
+   "depth": 4096,
+   "decode_tok_s": [
+    47.6,
+    46.3,
+    45.9,
+    47.2,
+    56.0
+   ],
+   "prefill_tok_s": [
+    2061,
+    1893,
+    2003,
+    2096,
+    2113
+   ],
+   "decode_tok_s_median": 47.2
+  },
+  {
+   "label": "1,024 tokens",
+   "depth": 1024,
+   "decode_tok_s": [
+    59.7,
+    59.7,
+    59.6
+   ],
+   "prefill_tok_s": [
+    1678,
+    1606,
+    1577
+   ],
+   "decode_tok_s_median": 59.7
+  },
+  {
+   "label": "4,096 tokens, after the other requests",
+   "depth": 4096,
+   "decode_tok_s": [
+    55.8,
+    55.9,
+    54.2,
+    57.0,
+    56.7
+   ],
+   "prefill_tok_s": [
+    2834,
+    2910,
+    3096,
+    2975,
+    3071
+   ],
+   "decode_tok_s_median": 55.9
+  }
+ ]
+}

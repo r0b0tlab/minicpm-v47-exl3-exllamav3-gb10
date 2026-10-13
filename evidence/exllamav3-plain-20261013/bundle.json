@@ -1,0 +1,437 @@
+{
+ "id": "exllamav3-plain-20261013",
+ "column": "exllamav3-plain",
+ "title": "exllamav3-plain-20261013",
+ "engine": {
+  "name": "ExLlamaV3",
+  "commit": "",
+  "mode": "plain autoregressive decode, text path, batch size 1, prefill chunk 2048"
+ },
+ "hardware": "1x NVIDIA GB10 (DGX Spark, aarch64, SM121), 128 GB unified memory",
+ "date": "2026-10-13",
+ "profile": "gb10-text-262k",
+ "model": {
+  "repo": "r0b0tlab/MiniCPM-V-4.7-35B-A3B-EXL3-6.08bpw",
+  "revision": "8f9f07872b09846f2e14b3c908e99be1ccf3402a"
+ },
+ "reproducible_with_this_repo": true,
+ "caveats": [
+  "One GB10, one pass per lane, greedy decoding; the Q200v2 kit has 180 rows (one row is 0.56 percentage points).",
+  "Batch size 1 is the qualified setting. The 4-requests-in-flight run used the experimental b4 setting (batch size 4): greedy outputs are not token-identical to serial decoding (7 to 10 of 12 probe prompts identical), see docs/QUALIFICATION.md.",
+  "The NIAH document differs from the reference scorecard's document (other prose); positions, cuts, wording and scoring are the same method.",
+  "Decode tokens/s at a fixed depth varied between runs of the same server (2k to 32k tokens: 41 to 59 tok/s); the grid reports medians of three cold repeats, evidence/*/depthscan.json holds the extra runs."
+ ],
+ "note": "",
+ "lanes": {
+  "q200": {
+   "rows": "q200.rows.public.jsonl",
+   "kit": "Q200v2 text-180 (r0b0bench subsets/q200v2)",
+   "dataset_sha256": "66a75701cbeea69f212e1c8be92aab9efaf3fa4d7af3c6911c8f7864a17d8d14",
+   "request": {
+    "chat_template_kwargs": {
+     "enable_thinking": true,
+     "thinking": true,
+     "reasoning_effort": "low"
+    },
+    "temperature": 0,
+    "top_p": 1,
+    "max_tokens": 8192,
+    "workers": 1
+   },
+   "hard_reasoning_grading": "hard_reasoning: 20 answers read item by item against the kit's reference answers by the builder of the run (an AI coding agent), not an independent human review; verdicts and rationales in q200.hard_reasoning.manual.json"
+  },
+  "q200_w4": {
+   "rows": "q200-w4.rows.public.jsonl"
+  },
+  "bench": {
+   "file": "bench.json"
+  },
+  "niah": {
+   "file": "niah.json"
+  },
+  "legd": {
+   "file": "legd.summary.json",
+   "rows": [
+    "legd-exllamav3-plain-s1.rows.jsonl"
+   ]
+  },
+  "smoke": {
+   "file": "smoke.json"
+  },
+  "clickrun": {
+   "file": "clickrun.json"
+  },
+  "chunk_ab": {
+   "file": "chunk_ab.json"
+  },
+  "depthscan": {
+   "file": "depthscan.json"
+  },
+  "warmup_4k": {
+   "file": "warmup_4k.json"
+  },
+  "batch_equiv": {
+   "file": "batch_equiv.json"
+  },
+  "batch_equiv_run1": {
+   "file": "batch_equiv_run1.json"
+  },
+  "token_parity": {
+   "file": "token_parity.json"
+  }
+ },
+ "results": {
+  "q200": {
+   "workers": 1,
+   "n": 180,
+   "passed": 167,
+   "families": {
+    "gsm8k": {
+     "n": 80,
+     "passed": 74,
+     "ungraded": 0,
+     "failed": 6
+    },
+    "humaneval": {
+     "n": 40,
+     "passed": 39,
+     "ungraded": 0,
+     "failed": 1
+    },
+    "ifeval": {
+     "n": 40,
+     "passed": 35,
+     "ungraded": 0,
+     "failed": 5
+    },
+    "hard_reasoning": {
+     "n": 20,
+     "passed": 19,
+     "ungraded": 0,
+     "failed": 1
+    }
+   },
+   "completion_tokens": 157491,
+   "finish_reasons": {
+    "stop": 179,
+    "length": 1
+   },
+   "sum_request_seconds": 2644.1,
+   "per_request_tok_s_median": 59.6,
+   "e2e_tok_s": 58.7,
+   "wall_seconds": 2682.9,
+   "per_family_throughput": {
+    "gsm8k": {
+     "completion_tokens": 39484,
+     "request_seconds": 661.3,
+     "tok_s_serial": 59.7
+    },
+    "humaneval": {
+     "completion_tokens": 26126,
+     "request_seconds": 441.2,
+     "tok_s_serial": 59.2
+    },
+    "ifeval": {
+     "completion_tokens": 44371,
+     "request_seconds": 745.3,
+     "tok_s_serial": 59.5
+    },
+    "hard_reasoning": {
+     "completion_tokens": 47510,
+     "request_seconds": 796.4,
+     "tok_s_serial": 59.7
+    }
+   }
+  },
+  "q200_w4": {
+   "workers": 4,
+   "n": 180,
+   "passed": 168,
+   "families": {
+    "gsm8k": {
+     "n": 80,
+     "passed": 75,
+     "ungraded": 0,
+     "failed": 5
+    },
+    "humaneval": {
+     "n": 40,
+     "passed": 39,
+     "ungraded": 0,
+     "failed": 1
+    },
+    "ifeval": {
+     "n": 40,
+     "passed": 34,
+     "ungraded": 0,
+     "failed": 6
+    },
+    "hard_reasoning": {
+     "n": 20,
+     "passed": 20,
+     "ungraded": 0,
+     "failed": 0
+    }
+   },
+   "completion_tokens": 157952,
+   "finish_reasons": {
+    "stop": 180
+   },
+   "sum_request_seconds": 4046.3,
+   "per_request_tok_s_median": 34.6,
+   "e2e_tok_s": 94.0,
+   "wall_seconds": 1680.9,
+   "per_family_throughput": {
+    "gsm8k": {
+     "completion_tokens": 38965,
+     "request_seconds": 1039.4,
+     "tok_s_serial": null
+    },
+    "humaneval": {
+     "completion_tokens": 28619,
+     "request_seconds": 684.0,
+     "tok_s_serial": null
+    },
+    "ifeval": {
+     "completion_tokens": 46064,
+     "request_seconds": 1149.3,
+     "tok_s_serial": null
+    },
+    "hard_reasoning": {
+     "completion_tokens": 44304,
+     "request_seconds": 1173.6,
+     "tok_s_serial": null
+    }
+   }
+  },
+  "bench": {
+   "chunk_size": 2048,
+   "kv_bits": 16,
+   "repeats": 3,
+   "decode_tokens": 128,
+   "depths": {
+    "1024": {
+     "decode_tok_s": 59.55,
+     "prefill_tok_s": 1096.359743040685,
+     "ttft_cold_s": 0.934,
+     "ttft_cache_hit_s": 0.1553
+    },
+    "4096": {
+     "decode_tok_s": 47.05,
+     "prefill_tok_s": 2076.9737842908576,
+     "ttft_cold_s": 1.9721,
+     "ttft_cache_hit_s": 0.1594
+    },
+    "32768": {
+     "decode_tok_s": 48.23,
+     "prefill_tok_s": 2888.7282472627253,
+     "ttft_cold_s": 11.3434,
+     "ttft_cache_hit_s": 0.1915
+    },
+    "131072": {
+     "decode_tok_s": 34.66,
+     "prefill_tok_s": 1764.2814838744414,
+     "ttft_cold_s": 74.292,
+     "ttft_cache_hit_s": 0.3135
+    },
+    "261000": {
+     "decode_tok_s": 24.71,
+     "prefill_tok_s": 1150.8682441057688,
+     "ttft_cold_s": 226.7853,
+     "ttft_cache_hit_s": 0.3478
+    }
+   },
+   "memory_before": {
+    "mem_available_gib": 79.26,
+    "torch_allocated_gib": 29.88,
+    "torch_reserved_gib": 30.2,
+    "torch_max_reserved_gib": 30.2
+   },
+   "memory_after": {
+    "mem_available_gib": 78.24,
+    "torch_allocated_gib": 29.88,
+    "torch_reserved_gib": 30.21,
+    "torch_max_reserved_gib": 30.21
+   }
+  },
+  "niah": {
+   "asked": 22,
+   "exact": 19,
+   "skipped": 0,
+   "wrong": [
+    {
+     "cut": 200000,
+     "needle": 3,
+     "verdict": "other_needle",
+     "other_needle": 4
+    },
+    {
+     "cut": 261000,
+     "needle": 3,
+     "verdict": "other_needle",
+     "other_needle": 4
+    },
+    {
+     "cut": 261000,
+     "needle": 4,
+     "verdict": "other_needle",
+     "other_needle": 5
+    }
+   ],
+   "max_prompt_tokens": 261034,
+   "window": 262144,
+   "cold_prefill_s": {
+    "4096": 1.99,
+    "16384": 6.68,
+    "32000": 13.77,
+    "64000": 30.62,
+    "128000": 77.87,
+    "200000": 152.1,
+    "261000": 233.06
+   }
+  },
+  "legd": {
+   "greedy/gsm8k": {
+    "n": 40,
+    "tok_s_mean": 60.133,
+    "tok_s_se": 0.011833243047687283,
+    "tok_s_pooled": 60.14298980598196,
+    "streams": 1
+   },
+   "greedy/code": {
+    "n": 20,
+    "tok_s_mean": 59.795500000000004,
+    "tok_s_se": 0.05042177370103008,
+    "tok_s_pooled": 59.87223295201308,
+    "streams": 1
+   },
+   "greedy/chat": {
+    "n": 20,
+    "tok_s_mean": 59.4135,
+    "tok_s_se": 0.4245872763792596,
+    "tok_s_pooled": 60.23208339876235,
+    "streams": 1
+   },
+   "greedy/all": {
+    "n": 80,
+    "tok_s_mean": 59.86875,
+    "tok_s_se": 0.11018847130648807,
+    "tok_s_pooled": 60.112605017670965,
+    "streams": 1
+   },
+   "sampled/gsm8k": {
+    "n": 10,
+    "tok_s_mean": 59.956999999999994,
+    "tok_s_se": 0.0250355303075006,
+    "tok_s_pooled": 59.97495255996935,
+    "streams": 1
+   },
+   "sampled/code": {
+    "n": 10,
+    "tok_s_mean": 59.69500000000001,
+    "tok_s_se": 0.05160211020663576,
+    "tok_s_pooled": 59.730816942613956,
+    "streams": 1
+   },
+   "sampled/chat": {
+    "n": 10,
+    "tok_s_mean": 59.42100000000001,
+    "tok_s_se": 0.6523997581578675,
+    "tok_s_pooled": 60.08369318693318,
+    "streams": 1
+   },
+   "sampled/all": {
+    "n": 30,
+    "tok_s_mean": 59.691,
+    "tok_s_se": 0.21452720000090864,
+    "tok_s_pooled": 59.94629888633763,
+    "streams": 1
+   },
+   "wall_seconds": 415.2,
+   "rows_sha256": "78342c2cdbbcfb7e4f19edffcd3099b7ee6f6b5906329a942cf6472fb06239a3"
+  },
+  "memory": {
+   "mem_available_gib": 78.24,
+   "mem_available_before_load_gib": 113.15,
+   "mem_available_after_load_gib": 79.77,
+   "torch_allocated_gib": 29.88,
+   "torch_reserved_gib": 30.21,
+   "torch_max_reserved_gib": 30.21,
+   "load_seconds": 13.6,
+   "window": 262144,
+   "profile": "gb10-text-262k"
+  },
+  "clickrun": {
+   "stages": {
+    "preflight": {
+     "seconds": 1,
+     "note": "11 checks: aarch64, driver 580.173.02, GB10 12.1, idle GPU, toolchain, Python 3.12.3, nvcc 13.0.88, disk, MemAvailable, port"
+    },
+    "venv": {
+     "seconds": 2,
+     "note": "python -m venv with the system Python 3.12.3"
+    },
+    "torch": {
+     "seconds": 100,
+     "note": "torch 2.14.0+cu130 aarch64 wheel and the pinned requirements"
+    },
+    "build": {
+     "seconds": 126,
+     "note": "ExLlamaV3 4d083d25c1a3 fetched by commit, compiled for sm_121 with 20 jobs, wheel cached by (commit, torch, Python, arch)"
+    },
+    "download": {
+     "seconds": 34,
+     "note": "draft repository (451 MB, anonymous, 8 workers) including one HTTP 429 retried after 15 s; target: 1 s for the 12 small files missing next to the hard-linked shards"
+    },
+    "verify-model": {
+     "seconds": 4,
+     "note": "28 files, 26.4 GiB hashed, sizes and sha256 against config/model.yaml (page cache warm); a second run with unchanged files re-hashes nothing"
+    },
+    "retire-cache": {
+     "seconds": 2,
+     "note": "25.9 GiB of shard pages retired (residency after: 0 MiB), MemFree 71.6 GiB"
+    },
+    "serve": {
+     "seconds": 16,
+     "note": "load of the 26 GiB pack and a 262,144-token fp16 KV cache, /health ready"
+    },
+    "smoke": {
+     "seconds": 9,
+     "note": "3 requests: text, thinking on/off with stream parity, long-prompt retrieval, image part 400"
+    }
+   },
+   "conditions": "Cold first run; the stages total about 5 minutes plus the pack download, which is bounded by the link (28.3 GB). Sum of the listed stage durations, excluding the target download: 294 s.",
+   "second_checkout": {
+    "description": "A second fresh checkout (new directory, new venv) on the same machine with the shared cache directory: the compiled wheel is reused, the pack directory already holds the verified shards.",
+    "stages": {
+     "preflight": {
+      "seconds": 1,
+      "note": "nvcc not required (cached wheel)"
+     },
+     "venv": {
+      "seconds": 2,
+      "note": ""
+     },
+     "torch": {
+      "seconds": 37,
+      "note": "torch wheel and requirements from pip's wheel cache"
+     },
+     "build": {
+      "seconds": 4,
+      "note": "cache hit on 4d083d25c1a3-torch2.14.0cu130-py3.12-sm121: pip install of the cached wheel, import check"
+     },
+     "download": {
+      "seconds": 0,
+      "note": "files already present"
+     },
+     "verify-model": {
+      "seconds": 7,
+      "note": "28 files, 26.4 GiB hashed (page cache warm)"
+     }
+    },
+    "total_seconds": 51
+   }
+  }
+ },
+ "schema": "r0b0tlab.evidence-bundle.v1"
+}

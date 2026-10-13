@@ -1,0 +1,60 @@
+{
+ "greedy/gsm8k": {
+  "n": 40,
+  "tok_s_mean": 60.133,
+  "tok_s_se": 0.011833243047687283,
+  "tok_s_pooled": 60.14298980598196,
+  "streams": 1
+ },
+ "greedy/code": {
+  "n": 20,
+  "tok_s_mean": 59.795500000000004,
+  "tok_s_se": 0.05042177370103008,
+  "tok_s_pooled": 59.87223295201308,
+  "streams": 1
+ },
+ "greedy/chat": {
+  "n": 20,
+  "tok_s_mean": 59.4135,
+  "tok_s_se": 0.4245872763792596,
+  "tok_s_pooled": 60.23208339876235,
+  "streams": 1
+ },
+ "greedy/all": {
+  "n": 80,
+  "tok_s_mean": 59.86875,
+  "tok_s_se": 0.11018847130648807,
+  "tok_s_pooled": 60.112605017670965,
+  "streams": 1
+ },
+ "sampled/gsm8k": {
+  "n": 10,
+  "tok_s_mean": 59.956999999999994,
+  "tok_s_se": 0.0250355303075006,
+  "tok_s_pooled": 59.97495255996935,
+  "streams": 1
+ },
+ "sampled/code": {
+  "n": 10,
+  "tok_s_mean": 59.69500000000001,
+  "tok_s_se": 0.05160211020663576,
+  "tok_s_pooled": 59.730816942613956,
+  "streams": 1
+ },
+ "sampled/chat": {
+  "n": 10,
+  "tok_s_mean": 59.42100000000001,
+  "tok_s_se": 0.6523997581578675,
+  "tok_s_pooled": 60.08369318693318,
+  "streams": 1
+ },
+ "sampled/all": {
+  "n": 30,
+  "tok_s_mean": 59.691,
+  "tok_s_se": 0.21452720000090864,
+  "tok_s_pooled": 59.94629888633763,
+  "streams": 1
+ },
+ "wall_seconds": 415.2,
+ "rows_sha256": "78342c2cdbbcfb7e4f19edffcd3099b7ee6f6b5906329a942cf6472fb06239a3"
+}

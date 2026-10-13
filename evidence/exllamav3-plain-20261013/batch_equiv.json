@@ -1,0 +1,99 @@
+{
+ "serial_vs_serial_identical": 12,
+ "streams": 4,
+ "prompts": 12,
+ "max_tokens": 256,
+ "identical": 7,
+ "tokens": 2603,
+ "serial_seconds": 44.2,
+ "concurrent_seconds": 22.0,
+ "serial_tok_s": 59.0,
+ "concurrent_tok_s": 118.2,
+ "rows": [
+  {
+   "name": "gsm8k-000",
+   "tokens": 236,
+   "identical": false,
+   "first_divergence": 170,
+   "agree_prefix": 170
+  },
+  {
+   "name": "gsm8k-006",
+   "tokens": 256,
+   "identical": true,
+   "first_divergence": null,
+   "agree_prefix": 256
+  },
+  {
+   "name": "gsm8k-012",
+   "tokens": 256,
+   "identical": true,
+   "first_divergence": null,
+   "agree_prefix": 256
+  },
+  {
+   "name": "gsm8k-018",
+   "tokens": 250,
+   "identical": true,
+   "first_divergence": null,
+   "agree_prefix": 250
+  },
+  {
+   "name": "gsm8k-024",
+   "tokens": 256,
+   "identical": false,
+   "first_divergence": 123,
+   "agree_prefix": 123
+  },
+  {
+   "name": "gsm8k-030",
+   "tokens": 256,
+   "identical": true,
+   "first_divergence": null,
+   "agree_prefix": 256
+  },
+  {
+   "name": "gsm8k-036",
+   "tokens": 237,
+   "identical": false,
+   "first_divergence": 181,
+   "agree_prefix": 181
+  },
+  {
+   "name": "humaneval-002",
+   "tokens": 97,
+   "identical": true,
+   "first_divergence": null,
+   "agree_prefix": 97
+  },
+  {
+   "name": "humaneval-008",
+   "tokens": 163,
+   "identical": true,
+   "first_divergence": null,
+   "agree_prefix": 163
+  },
+  {
+   "name": "humaneval-014",
+   "tokens": 84,
+   "identical": true,
+   "first_divergence": null,
+   "agree_prefix": 84
+  },
+  {
+   "name": "ifeval-000",
+   "tokens": 256,
+   "identical": false,
+   "first_divergence": 180,
+   "agree_prefix": 180
+  },
+  {
+   "name": "ifeval-006",
+   "tokens": 256,
+   "identical": false,
+   "first_divergence": 128,
+   "agree_prefix": 128
+  }
+ ],
+ "max_batch_size": 4
+}

@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "exllamav3": {
+    "repo": "https://github.com/r0b0tlab/exllamav3",
+    "branch": "minicpm-v4.7",
+    "commit": "4d083d25c1a3e195ce1305623ffa1eef84b834fe",
+    "version": "1.5.0",
+    "upstream": "https://github.com/turboderp-org/exllamav3",
+    "notes": "ExLlamaV3 v1.5.0 base + aarch64/sm_121 build fixes + MiniCPM-V-4.7 text architecture + DSpark draft quantisation shim"
+  },
+  "python": {"min": "3.11", "max": "3.13", "tested": "3.12"},
+  "torch": {
+    "version": "2.14.0+cu130",
+    "index_url": "https://download.pytorch.org/whl/cu130",
+    "cuda": "13.0",
+    "platform": "linux_aarch64"
+  },
+  "cuda_toolkit": {"nvcc_major": 13, "tested": "13.0.88"},
+  "arch": {"torch_cuda_arch_list": "12.1", "compute_capability": "12.1", "platform": "aarch64"},
+  "driver": {"min_major": 580, "tested": "580.173.02"},
+  "models": {
+    "target": {
+      "hf_repo": "r0b0tlab/MiniCPM-V-4.7-35B-A3B-EXL3-6.08bpw",
+      "revision": "8f9f07872b09846f2e14b3c908e99be1ccf3402a",
+      "base_model": "openbmb/MiniCPM-V-4.7-35B-A3B",
+      "base_revision": "4c7623a9326e0f74313bbc7292d852a9e3018a70"
+    },
+    "draft": {
+      "hf_repo": "r0b0tlab/MiniCPM-V-4.7-35B-A3B-DSpark-EXL3-6.00bpw",
+      "revision": "34c6b7758cbe79b4e8023b2007b93ecc2f026bf3",
+      "base_model": "openbmb/MiniCPM-V-4.7-35B-A3B-DSpark",
+      "base_revision": "5facb75c251ffd524524a544c1f5fd97ba0d6c5c"
+    }
+  }
+}

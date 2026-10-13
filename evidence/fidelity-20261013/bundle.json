@@ -1,0 +1,178 @@
+{
+ "id": "fidelity-20261013",
+ "column": "fidelity",
+ "title": "Quantisation fidelity of the 6.08 bpw pack (text), measured through the ExLlamaV3 forward",
+ "engine": {
+  "name": "ExLlamaV3",
+  "commit": "4d083d25c1a3e195ce1305623ffa1eef84b834fe",
+  "mode": "fp16 activations; reference = the bf16 checkpoint through the same implementation"
+ },
+ "hardware": "1x NVIDIA GB10 (DGX Spark)",
+ "date": "2026-10-13",
+ "profile": "n/a",
+ "model": {
+  "repo": "r0b0tlab/MiniCPM-V-4.7-35B-A3B-EXL3-6.08bpw",
+  "revision": null
+ },
+ "reproducible_with_this_repo": true,
+ "caveats": [
+  "Text only. The id sets are not shipped (they contain excerpts of non-public sources); their sha256 are in the files. Calibration was text-only.",
+  "These numbers apply to ExLlamaV3 serving: they were measured through the same forward."
+ ],
+ "note": "",
+ "lanes": {
+  "kl": {
+   "file": "kl.json"
+  },
+  "scan": {
+   "file": "rel_l2_scan.json"
+  },
+  "calibration": {
+   "file": "calibration.json"
+  }
+ },
+ "results": {
+  "fidelity": {
+   "set_A": {
+    "ids_sha256": "9c3477a78036b623d32de92c50b9455af7c010cbc08959652b9b2fc7fbb5338e",
+    "rows": 14,
+    "tokens_per_row": 1024,
+    "vs_fork_bf16": {
+     "kl_ref_to_pack_mean": 0.0086215256654412,
+     "kl_ref_to_pack_median": 0.0005654919304705138,
+     "kl_ref_to_pack_p95": 0.01974972043472782,
+     "kl_ref_to_pack_p99": 0.06729584143867479,
+     "kl_ref_to_pack_max": 9.961367567773635,
+     "kl_pack_to_ref_mean": 0.00882500634104874,
+     "kl_excluding_worst_row": 0.004524935817522601,
+     "top1_agreement": 0.9750279017857143,
+     "ppl_ratio": 1.0041304133876685,
+     "positions": 14336,
+     "rows": 14
+    },
+    "vs_hf_bf16": {
+     "kl_ref_to_pack_mean": 0.011946904890034289,
+     "kl_ref_to_pack_median": 0.0007481421813656558,
+     "kl_ref_to_pack_p95": 0.026897091991659898,
+     "kl_ref_to_pack_p99": 0.09319346866830583,
+     "kl_ref_to_pack_max": 10.425418309237639,
+     "kl_pack_to_ref_mean": 0.011414994032873022,
+     "kl_excluding_worst_row": 0.00600375324469947,
+     "top1_agreement": 0.9688197544642857,
+     "ppl_ratio": 1.0037214845687612,
+     "positions": 14336,
+     "rows": 14
+    },
+    "numerics_floor_fork_vs_hf": {
+     "kl_ref_to_pack_mean": 0.011581687781887947,
+     "kl_ref_to_pack_median": 0.0005616457086971363,
+     "kl_ref_to_pack_p95": 0.02210838465745461,
+     "kl_ref_to_pack_p99": 0.08820944681368702,
+     "kl_ref_to_pack_max": 17.722104195322117,
+     "kl_pack_to_ref_mean": 0.010458505401068555,
+     "kl_excluding_worst_row": 0.004895305931054418,
+     "top1_agreement": 0.9720284598214286,
+     "ppl_ratio": 0.9995927532784037,
+     "positions": 14336,
+     "rows": 14
+    }
+   },
+   "set_B": {
+    "ids_sha256": "70002c4a0efaae86bc8e2a4f6968e8eb671c0fa24b8e6f690ec243a618f168b3",
+    "rows": 100,
+    "tokens_per_row": 1024,
+    "vs_fork_bf16": {
+     "kl_ref_to_pack_mean": 0.004044510693175974,
+     "kl_ref_to_pack_median": 9.630813169579781e-05,
+     "kl_ref_to_pack_p95": 0.012651338413561423,
+     "kl_ref_to_pack_p99": 0.04397181922950681,
+     "kl_ref_to_pack_max": 28.91234373583671,
+     "kl_pack_to_ref_mean": 0.004049880057880029,
+     "kl_excluding_worst_row": 0.0035339500809709232,
+     "top1_agreement": 0.9797265625,
+     "ppl_ratio": 0.9997840111461288,
+     "positions": 102400,
+     "rows": 100
+    },
+    "vs_hf_bf16": {
+     "kl_ref_to_pack_mean": 0.005157478819217084,
+     "kl_ref_to_pack_median": 0.0001390604558269286,
+     "kl_ref_to_pack_p95": 0.017955709792267373,
+     "kl_ref_to_pack_p99": 0.05978270309691694,
+     "kl_ref_to_pack_max": 20.16226366084928,
+     "kl_pack_to_ref_mean": 0.005380900338102117,
+     "kl_excluding_worst_row": 0.004810492667533836,
+     "top1_agreement": 0.97720703125,
+     "ppl_ratio": 0.9990419323389145,
+     "positions": 102400,
+     "rows": 100
+    },
+    "numerics_floor_fork_vs_hf": {
+     "kl_ref_to_pack_mean": 0.0045426428464156645,
+     "kl_ref_to_pack_median": 8.961461554514715e-05,
+     "kl_ref_to_pack_p95": 0.014705169712969623,
+     "kl_ref_to_pack_p99": 0.05108332716121368,
+     "kl_ref_to_pack_max": 15.412915484618596,
+     "kl_pack_to_ref_mean": 0.004535115031991162,
+     "kl_excluding_worst_row": 0.004047868592514924,
+     "top1_agreement": 0.981181640625,
+     "ppl_ratio": 0.9992577608774084,
+     "positions": 102400,
+     "rows": 100
+    }
+   },
+   "yardstick_4bpw_published_exl3": {
+    "kl_ref_to_pack_mean": 0.036730969729661535,
+    "kl_ref_to_pack_median": 0.004591976010987448,
+    "kl_excluding_worst_row": 0.01633742220298764,
+    "top1_agreement": 0.9469168526785714,
+    "label": "Qwen3.5-35B-A3B, published EXL3 (turboderp)",
+    "bpw": 4.0
+   },
+   "fp32_floor": {
+    "fork_fp16": {
+     "label": "ExLlamaV3 fp16 (the implementation used for the measurements)",
+     "kl_mean": 0.006943006531221087,
+     "kl_excl_worst_row": 0.002714203161274132,
+     "top1": 0.9805385044642857
+    },
+    "hf_bf16": {
+     "label": "HF transformers bf16",
+     "kl_mean": 0.010636898831353644,
+     "kl_excl_worst_row": 0.004735364181448943,
+     "top1": 0.9724469866071429
+    },
+    "hf_fp32resid": {
+     "label": "HF transformers bf16 + fp32 residual stream",
+     "kl_mean": 0.011485606122019553,
+     "kl_excl_worst_row": 0.004496933685393676,
+     "top1": 0.9737723214285714
+    }
+   },
+   "weight_scan": {
+    "summary": {
+     "K_values": [
+      6,
+      8
+     ],
+     "dead_channels_total": 59093,
+     "flagged": 0,
+     "flagged_by_layer": {},
+     "matrices": 30971,
+     "matrices_flagged_if_full_rel_l2_were_used": 392,
+     "matrices_with_dead_channels": 515,
+     "thresholds": {
+      "abs_cut_K4": 0.3,
+      "accept_ratio": 1.5,
+      "expected_rfn": "0.29 * 1.96 ** (2 - K)",
+      "flag_ratio": 3.0,
+      "identity_tol_K16": 0.01,
+      "min_group": 8
+     },
+     "watch": 0
+    }
+   }
+  }
+ },
+ "schema": "r0b0tlab.evidence-bundle.v1"
+}
