@@ -55,6 +55,7 @@
     "default": "gb10-text-262k",
     "names": [
       "gb10-text-262k",
+      "gb10-text-262k-dspark",
       "gb10-text-262k-b4",
       "gb10-text-32k",
       "gb10-text-16k-lowmem"
@@ -75,6 +76,11 @@
       "primary": true
     },
     {
+      "dir": "evidence/exllamav3-drafted-20261014",
+      "column": "exllamav3-dspark",
+      "primary": true
+    },
+    {
       "dir": "evidence/fidelity-20261013",
       "column": "fidelity",
       "primary": true
@@ -92,6 +98,7 @@
     ],
     "docs/RESULTS.md": [
       "results-summary",
+      "draft-table",
       "q200-table",
       "agreement-table",
       "bench-table",

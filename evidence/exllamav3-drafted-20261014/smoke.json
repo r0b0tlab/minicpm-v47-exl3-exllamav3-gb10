@@ -1,0 +1,9 @@
+{
+ "ok": true,
+ "results": {
+  "max_model_len": 262144,
+  "text_tok_s": 55.88,
+  "long_prompt_tokens": 3102
+ },
+ "utc": "2026-10-14T14:27:19Z"
+}

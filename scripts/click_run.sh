@@ -25,7 +25,8 @@
 #   VENV, CACHE_DIR, BUILD_JOBS, DL_WORKERS, READY_TIMEOUT, PYTHON, GUARD=1, CHUNK_SIZE (--chunk-size N), BATCH_SIZE (--batch-size N; 1 is the qualified value, see docs/QUALIFICATION.md),
 #   RETIRE_DIRS="dirA dirB" (more model directories whose shard page cache should be retired too)
 #   --from S | --only S | --until S | --force | --verify-model | --allow-busy
-#   --with-draft (also download the DSpark draft pack) | --draft-only | --draft DIR (enable drafting; needs a build that supports it)
+#   --with-draft (download the DSpark draft pack and serve with drafting; profile gb10-text-262k-dspark does the same)
+#   --draft DIR (serve with this draft directory, no download) | --draft-mode adaptive|fixed | --draft-only (download only)
 #   --stop | --status | --env-report | --help
 set -Eeuo pipefail
 
@@ -53,6 +54,8 @@ GUARD="${GUARD:-0}"
 CHUNK_SIZE="${CHUNK_SIZE:-}"      # prefill chunk override (default: the profile's chunk_size)
 BATCH_SIZE="${BATCH_SIZE:-}"      # max concurrent sequences override (default: the profile's max_batch_size)
 ARTIFACTS="target"
+WANT_DRAFT=0                      # --with-draft or a drafting profile: download the draft pack and serve with it
+DRAFT_MODE="${DRAFT_MODE:-}"      # adaptive | fixed (default: the profile's)
 ALLOW_BUSY=0
 FORCE=0
 FORCE_VERIFY=0
@@ -90,8 +93,9 @@ while [[ $# -gt 0 ]]; do
     --until) UNTIL_STAGE="$2"; shift 2 ;;
     --force) FORCE=1; shift ;;
     --verify-model) FORCE_VERIFY=1; shift ;;
-    --with-draft) ARTIFACTS="target draft"; shift ;;
+    --with-draft) WANT_DRAFT=1; shift ;;
     --draft) DRAFT_DIR="$2"; shift 2 ;;
+    --draft-mode) DRAFT_MODE="$2"; shift 2 ;;
     --draft-only) ARTIFACTS="draft"; shift ;;
     --allow-busy) ALLOW_BUSY=1; shift ;;
     --stop) ACTION=stop; shift ;;
@@ -130,6 +134,12 @@ eval "$(cfgenv artifact draft | sed 's/^/D_/')"
 [[ -n "$MODEL_DIR" ]] || MODEL_DIR="$ROOT/models/$T_ART_DIR"
 # shellcheck disable=SC2153
 DRAFT_PATH="${DRAFT_DIR:-$(dirname "$MODEL_DIR")/$D_ART_DIR}"
+# a drafting profile or --with-draft: fetch the draft pack and serve with it attached
+if [[ "$P_DRAFT" == 1 ]]; then WANT_DRAFT=1; fi
+if [[ "$WANT_DRAFT" == 1 ]]; then
+  [[ -n "$DRAFT_DIR" ]] || DRAFT_DIR="$DRAFT_PATH"
+  if [[ "$ARTIFACTS" == target ]]; then ARTIFACTS="target draft"; fi
+fi
 TORCH_PIN="$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["torch"]["version"])' "$ROOT/runtime.lock.json")"
 TORCH_INDEX="$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["torch"]["index_url"])' "$ROOT/runtime.lock.json")"
 EXL_REPO="$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["exllamav3"]["repo"])' "$ROOT/runtime.lock.json")"
@@ -219,6 +229,7 @@ if [[ "$DRY_RUN" == 1 ]]; then
   echo "cache dir : $CACHE_DIR"
   echo "pins      : ExLlamaV3 ${EXL_COMMIT:0:12} | torch $TORCH_PIN | arch $ARCH_LIST"
   echo "pack      : ${HF_REPO:-$T_ART_REPO} @ ${REVISION:-$T_ART_REV}"
+  if [[ -n "$DRAFT_DIR" ]]; then echo "drafting  : on (${DRAFT_MODE:-${P_DRAFT_MODE:-adaptive}}), draft pack $DRAFT_DIR"; else echo "drafting  : off"; fi
   python3 "$SCRIPTS/cfg.py" need "$PROFILE"
   echo
   python3 "$SCRIPTS/stagectl.py" plan "${DECIDE_ARGS[@]}"
@@ -422,6 +433,7 @@ stage_serve() {
     cd "$ROOT"
     local extra=()
     if [[ -n "$DRAFT_DIR" ]]; then extra+=(--draft "$DRAFT_DIR"); fi
+    if [[ -n "$DRAFT_MODE" ]]; then extra+=(--draft-mode "$DRAFT_MODE"); fi
     if [[ -n "$CHUNK_SIZE" ]]; then extra+=(--chunk-size "$CHUNK_SIZE"); fi
     if [[ -n "$BATCH_SIZE" ]]; then extra+=(--max-batch-size "$BATCH_SIZE"); fi
     setsid nohup "$VENV/bin/python" "$SCRIPTS/serve_openai.py" --model-dir "$MODEL_DIR" --profile "$PROFILE" \
@@ -433,6 +445,7 @@ stage_serve() {
     if ! kill -0 "$pid" 2>/dev/null; then
       tail -n 30 "$log" >&2 || true
       if grep -q "Insufficient VRAM in split" "$log"; then die E_LOAD_VRAM "see .state/logs/serve.log"; fi
+      if grep -qE "DRAFT UNSUPPORTED|DRAFT PROBE FAILED" "$log"; then die E_DRAFT "$(grep -E 'DRAFT UNSUPPORTED|DRAFT PROBE FAILED' "$log" | head -n1 | cut -c1-200)"; fi
       die E_SERVE_EXIT "server pid $pid exited"
     fi
     if health_ok; then break; fi
@@ -458,6 +471,14 @@ stage_smoke() {
   "$VENV/bin/python" "$SCRIPTS/smoke.py" --base "$(base_url)" --model "$M_SERVED_NAME" \
     --out "$STATE/smoke-result.json" || die E_SMOKE "see output above"
   STAGE_DETAIL="3 requests ok"
+  if [[ -n "$DRAFT_DIR" ]]; then
+    # drafted requests must work and stay close to plain decoding: how many of N prompts are token-identical
+    local parity
+    parity="$("$VENV/bin/python" "$SCRIPTS/draft_parity.py" --base "$(base_url)" --n 12 --out "$STATE/draft-parity.json")" \
+      || die E_SMOKE "drafted request failed: $parity"
+    echo "$parity"
+    STAGE_DETAIL="3 requests ok; $(printf '%s' "$parity" | tail -n1)"
+  fi
 }
 
 run_stage() {

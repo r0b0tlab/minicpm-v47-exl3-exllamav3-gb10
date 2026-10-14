@@ -81,7 +81,25 @@ def kv_bytes_per_token(model, kv_bits):
     return base * (4 * kv_bits + 2) / 64.0
 
 
-def memory_budget(model, prof, weights_bytes=None):
+def draft_settings(prof):
+    """The profile's drafting block with defaults, or None when the profile does not draft."""
+    d = prof.get("draft")
+    if not isinstance(d, dict) or not d.get("enabled"):
+        return None
+    out = {"enabled": True, "mode": "adaptive", "num_draft_tokens": 15, "markov_top_k": 64,
+           "verify_cost_ms": None, "draft_cost_ms": None}
+    out.update(d)
+    if out["mode"] not in ("adaptive", "fixed"):
+        raise ConfigError("profile %s: draft.mode must be adaptive or fixed" % prof.get("name"))
+    if not 1 <= int(out["num_draft_tokens"]) <= 15:
+        raise ConfigError("profile %s: draft.num_draft_tokens must be 1..15" % prof.get("name"))
+    vc = out["verify_cost_ms"]
+    if vc is not None and (not isinstance(vc, list) or len(vc) < 16):
+        raise ConfigError("profile %s: draft.verify_cost_ms needs 16 entries (1..16 verified rows)" % prof.get("name"))
+    return out
+
+
+def memory_budget(model, prof, weights_bytes=None, draft_weights_bytes=None):
     """Unified-memory need of one profile, in GiB (see docs/MEMORY.md)."""
     w = weights_bytes if weights_bytes is not None else model["weights_bytes"]
     kv = kv_bytes_per_token(model, prof["kv_bits"]) * prof["window_tokens"]
@@ -93,6 +111,16 @@ def memory_budget(model, prof, weights_bytes=None):
         "recurrent_cache_gib": float(prof["recurrent_cache_gib"]),
         "workspace_gib": float(prof["workspace_gib"]),
     }
+    d = draft_settings(prof)
+    if d:
+        dw = draft_weights_bytes if draft_weights_bytes is not None else model.get("draft_weights_bytes", 451186749)
+        parts["draft_weights_gib"] = dw / GIB
+        # the draft's K/V cache has the target cache's size (same token count), fp16
+        parts["draft_cache_gib"] = model.get("draft_kv_bytes_per_token", 10240) * prof["window_tokens"] / GIB
+        # one recurrent-state snapshot per verified row and sequence, for the rewind after a rejection
+        parts["draft_history_gib"] = (model["recurrent_state_bytes"] * (int(d["num_draft_tokens"]) + 1)
+                                      * prof["max_batch_size"]) / GIB
+        parts["draft_workspace_gib"] = float(d.get("workspace_gib", 0.5))
     resident = sum(parts.values())
     parts["resident_gib"] = resident
     parts["headroom_gib"] = float(prof["headroom_gib"])
@@ -158,6 +186,8 @@ def _main(argv):
             _env_line("P_MAX_TOKENS", prof["default_max_tokens"]),
             _env_line("P_NEED_GIB", f"{budget['need_memavailable_gib']:.2f}"),
             _env_line("P_NONWEIGHT_MIB", int(-(-(budget["need_memavailable_gib"] - budget["weights_gib"]) * 1024 // 1))),
+            _env_line("P_DRAFT", 1 if draft_settings(prof) else 0),
+            _env_line("P_DRAFT_MODE", (draft_settings(prof) or {}).get("mode", "")),
             _env_line("M_SERVED_NAME", m["served_name"]),
             _env_line("M_VOCAB", m["vocab_size"]),
         ]
@@ -186,9 +216,13 @@ def _main(argv):
             for k, label in (("weights_gib", "weights (pack shards)"), ("kv_cache_gib", "KV cache"),
                              ("recurrent_state_gib", "recurrent state (GDN)"),
                              ("recurrent_cache_gib", "host recurrent-cache store"),
+                             ("draft_weights_gib", "draft weights"), ("draft_cache_gib", "draft K/V cache"),
+                             ("draft_history_gib", "recurrent snapshots for rewind"),
+                             ("draft_workspace_gib", "draft workspace"),
                              ("workspace_gib", "workspace"), ("resident_gib", "= resident total"),
                              ("headroom_gib", "+ headroom"), ("need_memavailable_gib", "= MemAvailable needed")):
-                print(f"  {label:30s} {b[k]:8.2f} GiB")
+                if k in b:
+                    print(f"  {label:30s} {b[k]:8.2f} GiB")
     else:
         sys.exit(f"unknown command {cmd!r}\n{__doc__}")
 

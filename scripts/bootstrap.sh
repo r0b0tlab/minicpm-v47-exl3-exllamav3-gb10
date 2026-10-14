@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # One-liner bootstrap:
 #
-#   curl -fsSL https://raw.githubusercontent.com/r0b0tlab/minicpm-v47-exl3-exllamav3-gb10/v2.0.0/scripts/bootstrap.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/r0b0tlab/minicpm-v47-exl3-exllamav3-gb10/v2.1.0/scripts/bootstrap.sh | bash
 #
 # Clones this repository at the pinned tag, verifies the sha256 of scripts/click_run.sh and
 # scripts/verify_tree.py against the values embedded below BEFORE executing anything from the checkout, runs the
@@ -12,11 +12,11 @@
 set -Eeuo pipefail
 
 REPO_URL="${BOOTSTRAP_REPO_URL:-https://github.com/r0b0tlab/minicpm-v47-exl3-exllamav3-gb10}"
-REPO_REF="${BOOTSTRAP_REF:-v2.0.0}"
+REPO_REF="${BOOTSTRAP_REF:-v2.1.0}"
 DEST="${BOOTSTRAP_DIR:-minicpm-v47-exl3-exllamav3-gb10}"
 # kept current by scripts/update_bootstrap_hashes.py (scripts/verify_tree.py fails when they are stale)
-EXPECT_CLICK_RUN_SHA256="fded3317a82d3bdd772101455d0ed953f062d57d57f44edac1085079b70942ff"
-EXPECT_VERIFY_TREE_SHA256="5a299fc11b743c042e1b1b6dacdbd3773de2e4c76386b77f6b580831f516342d"
+EXPECT_CLICK_RUN_SHA256="53a116318ea78c45f9a2e1b34d34c9643017bcbfbb3493bc6a2aa21df1e6bdd1"
+EXPECT_VERIFY_TREE_SHA256="99cb5ea35ef9c45ab321c0f6ed7cf6634b3240f5e5b204dbc2d91db944104bd1"
 
 die() { echo "bootstrap: $*" >&2; exit 1; }
 command -v git >/dev/null 2>&1 || die "git is required"

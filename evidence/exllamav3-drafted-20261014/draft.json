@@ -1,0 +1,26 @@
+{
+ "mode": "adaptive",
+ "num_draft_tokens": 15,
+ "markov_top_k": 64,
+ "draft_pack": "r0b0tlab/MiniCPM-V-4.7-35B-A3B-DSpark-EXL3-6.00bpw",
+ "draft_revision": "34c6b7758cbe",
+ "verify_cost_ms": [
+  16.2,
+  20.4,
+  23.2,
+  24.5,
+  26.7,
+  28.9,
+  30.7,
+  33.2,
+  36.7,
+  39.1,
+  41.4,
+  42.9,
+  44.9,
+  45.3,
+  46.0,
+  46.9
+ ],
+ "draft_cost_ms": 3.6
+}

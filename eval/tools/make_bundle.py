@@ -44,6 +44,11 @@ def main(argv=None):
     ap.add_argument("--niah")
     ap.add_argument("--legd-summary")
     ap.add_argument("--legd-rows", action="append", default=[])
+    ap.add_argument("--legd-run", action="append", default=[],
+                    help="NAME=ROWS[:COMPARE_ROWS]: a Leg D rows file; NAME '' is the primary run, otherwise the key "
+                         "legd_<NAME> (plain_ctl, fixed15); COMPARE_ROWS are the plain streams to count identical ones")
+    ap.add_argument("--json-result", action="append", default=[],
+                    help="KEY=PATH: copy a JSON file into the bundle and expose it as results[KEY]")
     ap.add_argument("--smoke")
     ap.add_argument("--memory", help="a /metrics JSON captured after load")
     ap.add_argument("--clickrun", help="JSON with the clean-room click-run stage timings (stage -> {seconds, note})")
@@ -124,6 +129,21 @@ def main(argv=None):
         for i, p in enumerate(a.legd_rows):
             shutil.copy(p, os.path.join(out, os.path.basename(p)))
         lanes["legd"] = {"file": "legd.summary.json", "rows": [os.path.basename(p) for p in a.legd_rows]}
+    for spec in a.legd_run:
+        name, _, rest = spec.partition("=")
+        rows_path, _, cmp_path = rest.partition(":")
+        rows = [json.loads(l) for l in open(rows_path) if l.strip()]
+        cmp_rows = [json.loads(l) for l in open(cmp_path) if l.strip()] if cmp_path else None
+        key = "legd" + ("_" + name if name else "")
+        results[key] = bl.legd_from_rows(rows, cmp_rows)
+        fname = "legd%s.rows.jsonl" % ("-" + name if name else "")
+        shutil.copy(rows_path, os.path.join(out, fname))
+        lanes[key] = {"rows": fname}
+    for spec in a.json_result:
+        key, path = spec.split("=", 1)
+        results[key] = load(path)
+        shutil.copy(path, os.path.join(out, key + ".json"))
+        lanes[key] = {"file": key + ".json"}
     if a.smoke:
         shutil.copy(a.smoke, os.path.join(out, "smoke.json"))
         lanes["smoke"] = {"file": "smoke.json"}

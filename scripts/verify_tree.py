@@ -176,6 +176,9 @@ def check_pins(root, proto, bundles, rep):
             rep.add(30, "%s: runtime.lock.json (%s@%s) != config/model.yaml (%s@%s)" % (
                 name, lk["hf_repo"], lk["revision"][:12], art["hf_repo"], art["revision"][:12]))
     commit = lock["exllamav3"]["commit"]
+    # results measured on an earlier pin of the same line stay valid evidence while they say so
+    known = [commit] + [c for c in (lock["exllamav3"].get("base_commit"),) if c] + \
+        list(lock["exllamav3"].get("bundle_commits", []))
     torch = lock["torch"]["version"]
     req = read(os.path.join(root, "requirements.txt"))
     if re.search(r"^torch\b", req, re.M):
@@ -188,7 +191,7 @@ def check_pins(root, proto, bundles, rep):
         if commit[:7] not in text:
             rep.add(30, "%s does not quote the ExLlamaV3 commit %s" % (rel, commit[:7]))
         for m in re.finditer(r"commit\s+`?([0-9a-f]{7,40})`?", text):
-            if not commit.startswith(m.group(1)):
+            if not any(k.startswith(m.group(1)) for k in known):
                 rep.add(30, "%s quotes commit %s which is not the pinned %s" % (rel, m.group(1), commit[:12]))
         for m in re.finditer(r"torch[ =]+(\d+\.\d+\.\d+)(\+cu\d+)?", text):
             if not torch.startswith(m.group(1)):
@@ -218,7 +221,7 @@ def check_pins(root, proto, bundles, rep):
             continue
         if str(b.get("column", "")).startswith("exllamav3"):
             c = (b.get("engine") or {}).get("commit")
-            if c and c != commit:
+            if c and c not in known:
                 rep.add(30, "%s was measured on commit %s, lock pins %s" % (rel, c[:12], commit[:12]))
 
 

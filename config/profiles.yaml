@@ -11,6 +11,9 @@
 #   workspace_gib         activations, MoE staging, CUDA context and allocator slack
 #   headroom_gib          what must stay free in MemAvailable on top of the above
 #   default_max_tokens    completion cap when a request names none (also capped by the window)
+#   draft                 optional DSpark block drafter: enabled, mode (adaptive | fixed), num_draft_tokens (1..15),
+#                         markov_top_k, workspace_gib, and the measured cost model of adaptive verification:
+#                         verify_cost_ms (16 entries: one verify pass over 1..16 rows) and draft_cost_ms
 schema: 1
 
 default: gb10-text-262k
@@ -26,6 +29,28 @@ profiles:
     workspace_gib: 4.0
     headroom_gib: 8.0
     default_max_tokens: 4096
+
+  gb10-text-262k-dspark:
+    description: Full window, fp16 KV, DSpark block drafter attached (15 drafts per round, Markov walk over the top 64 candidates, adaptive verification). Greedy output equals plain decoding up to fp16 kernel noise, not bit for bit
+    window_tokens: 262144
+    kv_bits: 16
+    max_batch_size: 1
+    chunk_size: 2048
+    recurrent_cache_gib: 1.0
+    workspace_gib: 4.0
+    headroom_gib: 8.0
+    default_max_tokens: 4096
+    draft:
+      enabled: true
+      mode: adaptive
+      num_draft_tokens: 15
+      markov_top_k: 64
+      workspace_gib: 0.5
+      # cost model of adaptive verification, measured on a GB10 with eval/tools/measure_verify_cost.py
+      # (3 runs x 7 reps, 300 committed tokens, median): ms of one verify pass over 1..16 rows, and ms of the
+      # draft side of a round: draft forward about 3.2 ms + K/V update about 0.3 ms, stored rounded up
+      verify_cost_ms: [16.2, 20.4, 23.2, 24.5, 26.7, 28.9, 30.7, 33.2, 36.7, 39.1, 41.4, 42.9, 44.9, 45.3, 46.0, 46.9]
+      draft_cost_ms: 3.6
 
   gb10-text-262k-b4:
     description: EXPERIMENTAL. Full window with up to 4 sequences batched (aggregate decode about 2x). Greedy output is not token-identical to serial decoding (docs/QUALIFICATION.md), so it is not the qualified setting

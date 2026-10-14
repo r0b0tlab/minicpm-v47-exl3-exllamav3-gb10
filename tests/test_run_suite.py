@@ -33,7 +33,8 @@ class RunSuiteTest(unittest.TestCase):
         self.assertEqual(b["schema"], "r0b0tlab.evidence-bundle.v1")
         self.assertEqual(b["column"], "exllamav3-plain")
         self.assertTrue(b["reproducible_with_this_repo"])
-        self.assertEqual(b["engine"]["commit"], "4d083d25c1a3e195ce1305623ffa1eef84b834fe")
+        lock = json.load(open(os.path.join(ROOT, "runtime.lock.json")))
+        self.assertEqual(b["engine"]["commit"], lock["exllamav3"]["commit"])
         self.assertIn("1024", b["results"]["bench"]["depths"])
         self.assertIn("legd", b["results"])
         self.assertIn("niah", b["results"])
@@ -43,7 +44,7 @@ class RunSuiteTest(unittest.TestCase):
         verify_tree.check_bundle_dir(root, "evidence/unit-test-2026-01-02", rep)
         self.assertEqual(rep.findings, [])
         manifest = open(os.path.join(bundle_dir, "MANIFEST.sha256")).read()
-        for name in ("bundle.json", "bench.json", "niah.json", "legd.summary.json"):
+        for name in ("bundle.json", "bench.json", "niah.json", "legd.rows.jsonl"):
             self.assertIn("  " + name, manifest)
 
 

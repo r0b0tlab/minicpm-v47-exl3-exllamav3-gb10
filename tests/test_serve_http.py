@@ -175,6 +175,30 @@ if __name__ == "__main__":
     unittest.main()
 
 
+class DraftSettingsTest(unittest.TestCase):
+    def args(self, *argv):
+        return so.build_parser().parse_args(["--model-dir", "/m"] + list(argv))
+
+    def test_no_draft_no_settings(self):
+        self.assertIsNone(so.resolve_draft_settings({"name": "p"}, self.args()))
+
+    def test_defaults_adaptive_15_k64(self):
+        d = so.resolve_draft_settings({"name": "p"}, self.args("--draft", "/d"))
+        self.assertEqual((d["mode"], d["num_draft_tokens"], d["markov_top_k"]), ("adaptive", 15, 64))
+
+    def test_profile_block_and_overrides(self):
+        prof = {"name": "p", "draft": {"enabled": True, "mode": "adaptive", "num_draft_tokens": 15,
+                                       "markov_top_k": 64, "verify_cost_ms": [float(i) for i in range(16)],
+                                       "draft_cost_ms": 4.0}}
+        d = so.resolve_draft_settings(prof, self.args("--draft", "/d"))
+        self.assertEqual(d["verify_cost_ms"][3], 3.0)
+        d = so.resolve_draft_settings(prof, self.args("--draft", "/d", "--draft-mode", "fixed", "--num-draft-tokens", "8",
+                                                     "--markov-top-k", "32"))
+        self.assertEqual((d["mode"], d["num_draft_tokens"], d["markov_top_k"]), ("fixed", 8, 32))
+        with self.assertRaises(ValueError):
+            so.resolve_draft_settings(prof, self.args("--draft", "/d", "--num-draft-tokens", "16"))
+
+
 class ArgsTest(unittest.TestCase):
     def test_defaults_and_draft_env(self):
         import os

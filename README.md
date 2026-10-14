@@ -8,21 +8,26 @@ unified memory, starts an OpenAI-compatible server and smoke-tests it. The repos
 suite and the measured record, laid out by the r0b0tlab model-repo protocol ([docs/PROTOCOL.md](docs/PROTOCOL.md)).
 
 - Pack (ours, Apache-2.0): [r0b0tlab/MiniCPM-V-4.7-35B-A3B-EXL3-6.08bpw](https://huggingface.co/r0b0tlab/MiniCPM-V-4.7-35B-A3B-EXL3-6.08bpw), revision `8f9f07872b09`, 28.3 GB in 8 shards
-- DSpark draft (ours, Apache-2.0): [r0b0tlab/MiniCPM-V-4.7-35B-A3B-DSpark-EXL3-6.00bpw](https://huggingface.co/r0b0tlab/MiniCPM-V-4.7-35B-A3B-DSpark-EXL3-6.00bpw), revision `34c6b7758cbe`, 451 MB (not run by ExLlamaV3 today, see below)
-- Loader: [r0b0tlab/exllamav3, branch `minicpm-v4.7`](https://github.com/r0b0tlab/exllamav3/tree/minicpm-v4.7), commit `4d083d25c1a3` (ExLlamaV3 v1.5.0 base, aarch64 / sm_121 build fixes, the MiniCPM-V-4.7 text architecture, a DSpark draft quantisation shim); torch 2.14.0+cu130
+- DSpark draft (ours, Apache-2.0): [r0b0tlab/MiniCPM-V-4.7-35B-A3B-DSpark-EXL3-6.00bpw](https://huggingface.co/r0b0tlab/MiniCPM-V-4.7-35B-A3B-DSpark-EXL3-6.00bpw), revision `34c6b7758cbe`, 451 MB (run by ExLlamaV3 on the `minicpm-v4.7-dspark` loader branch, see below)
+- Loader: [r0b0tlab/exllamav3-r0b0t, branch `minicpm-v4.7-dspark`](https://github.com/r0b0tlab/exllamav3-r0b0t/tree/minicpm-v4.7-dspark), commit `5ddae7d12448` (on top of branch `minicpm-v4.7` @ `4d083d25c1a3`: ExLlamaV3 v1.5.0 base, aarch64 / sm_121 build fixes, the MiniCPM-V-4.7 text architecture, a DSpark draft quantisation shim; the dspark branch adds DSpark drafting); torch 2.14.0+cu130
 
 ## What runs where
 
-| | ExLlamaV3 today (this repository's runtime) | The same weights on an engine with the vision tower and DSpark drafting |
-|---|---|---|
-| input | **text only** (image / video parts are a clear HTTP 400) | text, images, video |
-| decoding | plain autoregressive, no draft | DSpark block drafter, 15 drafted tokens per round, output identical to plain decoding |
-| numbers in this README | measured here, reproducible with `eval/run_suite.sh` | **reference numbers**, labelled as such, not reproducible with this repository's runtime |
+| | ExLlamaV3 plain decode | ExLlamaV3 + DSpark drafting | The same weights on an engine with the vision tower and DSpark drafting |
+|---|---|---|---|
+| runtime | this repository, profile `gb10-text-262k` | this repository, profile `gb10-text-262k-dspark` (`./run.sh --with-draft`) | not part of this repository |
+| input | **text only** (image / video parts are a clear HTTP 400) | **text only** | text, images, video |
+| decoding | autoregressive | DSpark block drafter: 15 drafts per round, Markov walk over the top 64 candidates, adaptive verification | DSpark block drafter, 15 drafts per round |
+| output vs plain decoding | the reference | **not bit-identical**: 59 of 80 greedy streams identical to plain on the 80-prompt kit with adaptive drafting (21 differ; the divergence point and cause were not measured) | bit-identical |
+| numbers in this README | measured here | measured here | **reference numbers**, labelled as such, not reproducible with this repository's runtime |
 
-ExLlamaV3 stores the vision tower (bf16, byte-identical to the source) but does not run it. It converts and loads
-the DSpark draft, but its drafting path is not implemented in the pinned build: the server's `--draft` /
-`DRAFT_DIR` option feature-detects this and refuses to start with a clear message. The results table has a column
-for "ExLlamaV3 + DSpark" that is filled by a generated block once a build supports drafting.
+ExLlamaV3 stores the vision tower (bf16, byte-identical to the source) but does not run it. The drafted profile
+attaches the 451 MB DSpark draft (`r0b0tlab/MiniCPM-V-4.7-35B-A3B-DSpark-EXL3-6.00bpw`) through the
+`minicpm-v4.7-dspark` branch of the loader fork; builds without the drafting path make the server refuse to start with
+an explanation. Every draft is verified by the target model. Greedy outputs still differ from plain decoding on some
+prompts (21 of 80 in the measured run); the divergence point and the cause were not measured. Adaptive verification is the
+default because verifying 15 drafts on low-acceptance text (chat) is *slower* than plain decoding; it verifies the
+number of drafts that pays off under a measured cost model of the round.
 
 ## Quickstart (click-run)
 
@@ -33,13 +38,16 @@ curl -s http://127.0.0.1:8000/v1/chat/completions -H 'Content-Type: application/
   -d '{"model":"minicpm-v-4.7-35b-a3b-exl3-6.08bpw","messages":[{"role":"user","content":"Why is the sky blue?"}],"max_tokens":1024}'
 ```
 
-or, from nothing: `curl -fsSL https://raw.githubusercontent.com/r0b0tlab/minicpm-v47-exl3-exllamav3-gb10/v2.0.0/scripts/bootstrap.sh | bash`
+or, from nothing: `curl -fsSL https://raw.githubusercontent.com/r0b0tlab/minicpm-v47-exl3-exllamav3-gb10/v2.1.0/scripts/bootstrap.sh | bash`
 (clones the pinned tag, verifies `click_run.sh` and `verify_tree.py` against embedded hashes before running anything).
 
 Useful variations: `./run.sh --plan` (what would run and why), `PROFILE=gb10-text-32k PORT=8001 ./run.sh`,
 `./run.sh --status`, `./run.sh --stop`, `./run.sh --from retire-cache` (restart the server), `--force`,
 `--verify-model` (re-hash every shard), `--with-draft` (also download the DSpark draft pack), `GUARD=1` (optional
 host-memory watchdog). Flags and environment variables are listed by `./run.sh --help`.
+
+For drafting add the draft pack and attach it: `./run.sh --with-draft` (or `PROFILE=gb10-text-262k-dspark ./run.sh`);
+the 451 MB draft is downloaded, verified and attached, and the smoke stage ends with a drafted-vs-plain parity probe.
 
 A cold first run on a GB10 with a fast link: venv 2 s, torch wheel and requirements about 100 s, extension build
 about 2 min, pack download bounded by the link (28.3 GB), verification 4 s, load 16 s. Re-runs skip every completed
@@ -60,7 +68,7 @@ stage whose inputs are unchanged (`.state/<stage>.json`), and the compiled exten
 | prefix cache | yes | ExLlamaV3's paged prefix cache; `usage.prompt_tokens_details.cached_tokens` |
 | concurrency | experimental | one request at a time (FIFO) is the qualified setting; `BATCH_SIZE=4 ./run.sh` (profile `gb10-text-262k-b4`) batches up to four requests: aggregate decode about 2x, accuracy unchanged on Q200v2, but greedy output is not token-identical to serial decoding ([docs/QUALIFICATION.md](docs/QUALIFICATION.md)) |
 | image / video / audio input | no | HTTP 400 with an explanation (needs an engine with the vision tower) |
-| DSpark drafting | not yet | refused cleanly while the fork's draft path is unimplemented |
+| DSpark drafting | yes | profile `gb10-text-262k-dspark`; adaptive verification by default; output differs from plain decoding on some prompts (21 of 80 greedy prompts in the measured run), not bit for bit; builds without the drafting path refuse to start |
 | authentication, TLS | no | loopback by default, see Security |
 
 Endpoints besides the two above: `GET /health`, `GET /v1/models` (`max_model_len` from the profile), `GET /metrics`
@@ -77,30 +85,32 @@ Everything below the line is generated from the hash-listed bundles in [`evidenc
 <!-- BEGIN GENERATED:results-summary -->
 | metric | ExLlamaV3, plain decode (this repo's runtime) | ExLlamaV3 + DSpark drafting | Reference engine: DSpark drafting + vision (not reproducible here) |
 |---|---:|---:|---:|
-| **Q200v2 text-180**, accuracy | 167/180 (92.8%) | pending | 168/180 (93.3%) |
-| &nbsp;&nbsp;GSM8K-style math (80) | 74/80 (92.5%) | pending | 76/80 (95.0%) |
-| &nbsp;&nbsp;HumanEval-style code (40) | 39/40 (97.5%) | pending | 38/40 (95.0%) |
-| &nbsp;&nbsp;IFEval-style instruction following (40) | 35/40 (87.5%) | pending | 35/40 (87.5%) |
-| &nbsp;&nbsp;Hard reasoning (20, graded manually) | 19/20 (95.0%) | pending | 19/20 (95.0%) |
-| Q200v2 end-to-end tok/s, 1 request in flight (reference column: with drafting) | 58.7 | pending | 135.0 |
-| Q200v2 end-to-end tok/s, 4 requests in flight (ExLlamaV3: experimental batch 4; reference: with drafting) | 94.0 | pending | 183.8 |
-| Decode tok/s at ~4k context | 47.0 | pending | 66.8 |
-| Decode tok/s at ~32k context | 48.2 | pending | 54.0 |
-| Decode tok/s at ~128k context | 34.7 | pending | 32.8 |
-| Decode tok/s at ~261k context | 24.7 | pending | 21.5 |
-| Prefill tok/s at ~32k | 2,889 | pending | 4,211 |
-| Cold time to first token at ~32k (s) | 11.3 | pending | 7.6 |
-| Cold time to first token at ~261k (s) | 226.8 | pending | 137.5 |
-| Needle retrieval (22 questions, token-exact) | 19/22 exact | pending | 20/22 exact |
-| Leg D decode tok/s, GSM8K-style, plain | 60.1 | pending | 67.1 |
-| Leg D decode tok/s, code, plain | 59.8 | pending | 68.2 |
-| Leg D decode tok/s, chat, plain | 59.4 | pending | 68.4 |
-| Leg D decode tok/s, GSM8K-style, drafted | n/a | pending | 227.3 |
-| Leg D decode tok/s, code, drafted | n/a | pending | 280.4 |
-| Leg D decode tok/s, chat, drafted | n/a | pending | 84.7 |
-| GPU-side resident memory | 29.9 GiB allocated | pending | 34.2 GiB |
-
-_ExLlamaV3 + DSpark: pending. The fork's drafting path is being implemented; once a build supports it this column is filled by_ `DRAFT_DIR=models/MiniCPM-V-4.7-35B-A3B-DSpark-EXL3-6.00bpw ./run.sh --with-draft --yes && eval/run_suite.sh http://127.0.0.1:8000 exllamav3-dspark`.
+| **Q200v2 text-180**, accuracy | 167/180 (92.8%) | 169/180 (93.9%) | 168/180 (93.3%) |
+| &nbsp;&nbsp;GSM8K-style math (80) | 74/80 (92.5%) | 75/80 (93.8%) | 76/80 (95.0%) |
+| &nbsp;&nbsp;HumanEval-style code (40) | 39/40 (97.5%) | 39/40 (97.5%) | 38/40 (95.0%) |
+| &nbsp;&nbsp;IFEval-style instruction following (40) | 35/40 (87.5%) | 35/40 (87.5%) | 35/40 (87.5%) |
+| &nbsp;&nbsp;Hard reasoning (20, AI-graded, see notes) | 19/20 (95.0%) | 20/20 (100.0%) | 19/20 (95.0%) |
+| Q200v2 end-to-end tok/s, 1 request in flight (reference column: with drafting) | 58.7 | 109.8 | 135.0 |
+| Q200v2 end-to-end tok/s, 4 requests in flight (ExLlamaV3: experimental batch 4; reference: with drafting) | 94.0 | not run (batch 1) | 183.8 |
+| Decode tok/s at ~4k context | 47.0 | 70.7 | 66.8 |
+| Decode tok/s at ~32k context | 48.2 | 48.7 | 54.0 |
+| Decode tok/s at ~128k context | 34.7 | 24.1 | 32.8 |
+| Decode tok/s at ~261k context | 24.7 | 15.9 | 21.5 |
+| Prefill tok/s at ~32k | 2,889 | 2,839 | 4,211 |
+| Cold time to first token at ~32k (s) | 11.3 | 11.5 | 7.6 |
+| Cold time to first token at ~261k (s) | 226.8 | 227.1 | 137.5 |
+| Needle retrieval (22 questions, token-exact) | 19/22 exact | 19/22 exact | 20/22 exact |
+| Leg D decode tok/s, GSM8K-style, plain | 60.1 | - | 67.1 |
+| Leg D decode tok/s, code, plain | 59.8 | - | 68.2 |
+| Leg D decode tok/s, chat, plain | 59.4 | - | 68.4 |
+| Leg D decode tok/s, GSM8K-style, drafted, adaptive verification | n/a | 177.8 | 227.3 |
+| Leg D decode tok/s, code, drafted, adaptive verification | n/a | 220.5 | 280.4 |
+| Leg D decode tok/s, chat, drafted, adaptive verification | n/a | 69.0 | 84.7 |
+| Leg D decode tok/s, GSM8K-style, drafted, always 15 drafts | n/a | 162.1 | - |
+| Leg D decode tok/s, code, drafted, always 15 drafts | n/a | 207.3 | - |
+| Leg D decode tok/s, chat, drafted, always 15 drafts | n/a | 41.0 | - |
+| Leg D greedy streams identical to plain decoding | n/a | 59/80 | 80/80 (bit-identical by construction and checked) |
+| GPU-side resident memory | 29.9 GiB allocated | 33.8 GiB allocated | 34.2 GiB |
 <!-- END GENERATED:results-summary -->
 
 Reading the table:
@@ -108,13 +118,15 @@ Reading the table:
 - The **ExLlamaV3** column is this repository's runtime on one GB10: plain autoregressive decode, text path, batch
   size 1. The **reference engine** column is the same weights on an engine that implements the DSpark drafter and the
   vision tower; its Q200v2 throughput and Leg D "drafted" rows are *with drafting*, its decode / prefill / TTFT depth
-  rows are plain decoding. Those numbers cannot be reproduced with this repository.
+  rows are plain decoding. Those numbers cannot be reproduced with this repository. The reference column was measured on 2026-10-13
+  (bundle `evidence/reference-dspark-engine-20261013`); it has not been re-measured since, so its decode figures at depth
+  are dated, not current.
 - Accuracy (Q200v2, same kit, same settings, greedy) is comparable between the two engines: the families agree
   within a few rows and 164 of 180 rows are passed by both (the row-level table is in
   [docs/RESULTS.md](docs/RESULTS.md)). `hard_reasoning` has no automatic grader: the 20 answers of each run were
   read item by item against the kit's reference answers by the builder of that run, not by an independent reviewer;
-  verdicts and rationales are in the bundles. One ExLlamaV3 row (`hard-13`) ran into the 8,192-token ceiling while
-  thinking and counts as failed, as the reference run's one ceiling row does.
+  verdicts and rationales are in the bundles. The plain run has one ExLlamaV3 row at the 8,192-token ceiling (`hard-13`,
+  no answer, counted as failed); the drafted run has one (`humaneval-032`, no answer, counted as failed).
 - Plain decoding on ExLlamaV3 runs at 60 tok/s on short contexts against 68 on the reference engine (88 %); the
   much higher Q200v2 and Leg D "drafted" throughput of the reference column is the drafter. At long context
   ExLlamaV3's plain decode is at least as fast (35 and 25 tok/s at 128k and 261k against 33 and 22 tok/s), while
@@ -123,6 +135,22 @@ Reading the table:
   requests a freshly started server sees decode and prefill more slowly than later ones (4,096 tokens: 47 tok/s
   on the first visit in the grid, 55 to 57 once warm; see "Decode speed at a depth depends on how long the server
   has been up" in [docs/RESULTS.md](docs/RESULTS.md)). Read that range as 46 to 60 tok/s, not as a curve.
+- **Drafting (ExLlamaV3 + DSpark, adaptive verification, the default).** Leg D greedy decode averages 161 tok/s
+  against 60 plain (code 221 against 60, GSM8K-style 178 against 60, chat 69 against 59). With 15 drafts fixed in
+  every round, chat drops to 41 tok/s (0.69x plain), which is why adaptive verification is the default. Greedy
+  streams match plain on 59 of 80 prompts with adaptive drafting (60 of 80 with fixed 15). Q200v2 at batch 1
+  runs at 110 tok/s end to end against 59 plain, and scores 169/180 against 167/180 plain. That difference is
+  within what one run per row can show; it is not evidence that drafting improves accuracy.
+- **Drafting at long context is not faster.** Decode with the draft attached matches plain at 32k (48.7 against
+  48.2 tok/s), is faster at 1k (65.6 against 59.5 tok/s) and at 4k (70.7 against 47.0 on the first visit, 55 to 57 once warm), and is slower at 128k (24.1 against 34.7 tok/s) and 261k (15.9 against
+  24.7 tok/s). We have not explained this yet. The cause is not established. Do not read the drafted column as a long-context
+  speedup.
+- **Grading of the drafted hard-reasoning family.** The 20 answers were graded item by item against the kit's
+  reference answers by a blind Sonnet 5.5 subagent of the builder's assistant (given the rows, the kit's reference
+  answers and the kit's dump tool; not the plain grades). Its verdicts agree with the plain grades on 19 of 20; the
+  one disagreement (`hard-13`) is a budget difference: the plain run ran out of tokens without an answer, and the
+  drafted run answered 2/3, which the maintainers' assistant re-checked against the reference answer. The `independent_manual_review` method name in the evidence
+  file is the kit's schema field; the grader is an AI assistant, not an independent human reviewer.
 - Full method, limits and per-lane detail: [docs/RESULTS.md](docs/RESULTS.md); what is and is not qualified:
   [docs/QUALIFICATION.md](docs/QUALIFICATION.md).
 
@@ -161,7 +189,8 @@ host-wide cache drop. If you start the server by hand, run `scripts/retire_page_
 ## Profiles
 
 `config/profiles.yaml`: `gb10-text-262k` (default, full window, fp16 KV, chunk 2,048), `gb10-text-32k`,
-`gb10-text-16k-lowmem` (smallest footprint, 1,024-token chunks), `gb10-text-262k-b4` (experimental, up to 4 sequences batched). A profile is data: window, KV bits, batch size,
+`gb10-text-16k-lowmem` (smallest footprint, 1,024-token chunks), `gb10-text-262k-dspark` (DSpark drafting attached),
+`gb10-text-262k-b4` (experimental, up to 4 sequences batched). A profile is data: window, KV bits, batch size,
 chunk size, host recurrent-cache store, workspace and headroom. `scripts/cfg.py need <profile>` prints its budget.
 
 ## How this repository is organised
@@ -193,7 +222,7 @@ size limit gate the tree. Details, exit classes, and how another model repositor
 ## Verify
 
 ```bash
-python3 -m unittest discover -s tests -t . -q      # offline unit tests (about 120), no GPU
+python3 -m unittest discover -s tests -t . -q      # offline unit tests (131), no GPU
 python3 scripts/verify_tree.py                      # layout, pins, evidence manifests, size, generated blocks
 bash scripts/check_public.sh                        # no private vocabulary in any shipped file
 (cd evidence/<bundle> && sha256sum -c MANIFEST.sha256)
@@ -241,6 +270,6 @@ every file is checked against a pinned size and sha256 before it is used. Model 
 
 - Pack: https://huggingface.co/r0b0tlab/MiniCPM-V-4.7-35B-A3B-EXL3-6.08bpw
 - DSpark draft: https://huggingface.co/r0b0tlab/MiniCPM-V-4.7-35B-A3B-DSpark-EXL3-6.00bpw
-- Loader branch: https://github.com/r0b0tlab/exllamav3/tree/minicpm-v4.7
+- Loader branches: https://github.com/r0b0tlab/exllamav3-r0b0t/tree/minicpm-v4.7 (plain decode) and https://github.com/r0b0tlab/exllamav3-r0b0t/tree/minicpm-v4.7-dspark (drafting)
 - Evaluation kit: https://github.com/r0b0tlab/r0b0bench (subset `subsets/q200v2`)
 - Protocol v1 sibling: https://github.com/r0b0tlab/glm53-flash-exl3-exllamav3-gb10

@@ -1,0 +1,129 @@
+{
+ "schema": "r0b0tlab.qwen38.manual_evidence.v1",
+ "dataset_sha256": "66a75701cbeea69f212e1c8be92aab9efaf3fa4d7af3c6911c8f7864a17d8d14",
+ "run_identity_sha256": "68b375a3699056988163f78a84783c8f5a3abd40b5b65e4dc19169c6ac39b8de",
+ "reviewer": "Sonnet 5.5 subagent of the maintainers' assistant, blind to the plain grading; item by item against the kit's reference answers; the one disagreement with the plain grading (hard-13) re-checked by the maintainers' assistant",
+ "method": "independent_manual_review",
+ "rows": [
+  {
+   "id": "hard-00",
+   "content_sha256": "9da2494f30e9cb7d24593ba7e0f6197c62e37fdaa17f06b991331623c5a64de8",
+   "passed": true,
+   "rationale": "Proves n^3-n divisible by 6 via three consecutive integers and states p^3-p divisible by 24 for prime p>3 with a valid 8 and 3 argument; matches reference."
+  },
+  {
+   "id": "hard-01",
+   "content_sha256": "5d80e6d1854dff33382717dde60af1f36463fab8f9d155438c3fec0cc0ec5a07",
+   "passed": true,
+   "rationale": "Final answer 13/4, same as the reference; derivation via 9/4 + 1 and (N+1)/(K+1) is sound."
+  },
+  {
+   "id": "hard-02",
+   "content_sha256": "5c57c70071c9268f9b65c34161d05c4e52718471f7e6d4f2bb0ce639444b70a8",
+   "passed": true,
+   "rationale": "Lists exactly (53,52), (19,16), (13,8), (11,4) from the odd factor pairs of 105; matches reference."
+  },
+  {
+   "id": "hard-03",
+   "content_sha256": "083f892786a7dd156be2ed2fddbe67ffcf60af3193fa82dd7878655361bed26d",
+   "passed": true,
+   "rationale": "Valid contradiction proof (a, b coprime, both even) in exactly five sentences; matches the reference approach."
+  },
+  {
+   "id": "hard-04",
+   "content_sha256": "e8d9b663a9cc3cf67edea9e2319c0fa7ce633255dd66e1a7edbe0eb8b30d2148",
+   "passed": true,
+   "rationale": "Gives 1/6048000 using the correct product formula; arithmetic checks (12^4=20736, prod k! to 7 = 125411328000); matches reference."
+  },
+  {
+   "id": "hard-05",
+   "content_sha256": "89b13633ae9be0f6e99e65fb5a328950eb1203eb0b9627dc9eb0f0fcb03e94d3",
+   "passed": true,
+   "rationale": "Recurrence V_n=V_{n-1}-4, V_0=100, tank empties after 25 hours; matches reference."
+  },
+  {
+   "id": "hard-06",
+   "content_sha256": "88045bcf50adf23598e5c5db49f06597f2619bf9261395962466f5c5ce271869",
+   "passed": true,
+   "rationale": "Binary search Theta(log n); BFS tree and heapify Theta(n); mergesort Theta(n log n); quicksort Theta(n^2); all match reference, ordered ascending with one-clause justifications."
+  },
+  {
+   "id": "hard-07",
+   "content_sha256": "1a35903345af0f2dc7d375c76b80736e591897d8be4af199bc8dfec8a8ad3614",
+   "passed": true,
+   "rationale": "Final answer 3/10, same as the reference; C(9,2)/C(10,3)=36/120=3/10."
+  },
+  {
+   "id": "hard-08",
+   "content_sha256": "e83ddc36ed645cb5ec503d742f7f5e2d1d5b9c11742b368284135c5665fa468b",
+   "passed": true,
+   "rationale": "Answer 29 via Frobenius number 6*7-6-7; matches reference."
+  },
+  {
+   "id": "hard-09",
+   "content_sha256": "0a4e10129592193c05ef2b374d1fa9fbf3f1bfbae49182eef53b239280e6967f",
+   "passed": true,
+   "rationale": "3 states by remainder mod 3, start and accept q0, correct transition table, valid distinguishability argument; matches reference."
+  },
+  {
+   "id": "hard-10",
+   "content_sha256": "7b82ea10bea1e953e33561fb4a6643e81b8943edcd60404a754730ffdf2f15f1",
+   "passed": true,
+   "rationale": "Answer 2 (Gamma(3)=2!); matches reference."
+  },
+  {
+   "id": "hard-11",
+   "content_sha256": "4a6f872d88be20c4a58e6487470e7ee4ec5cea7a594cfd8b770264f7bda514a4",
+   "passed": true,
+   "rationale": "Logarithmic differentiation gives f'(1)=1; matches reference."
+  },
+  {
+   "id": "hard-12",
+   "content_sha256": "529f7a21bac1a875631e7fabaff36db66735d50b9270f5ca1de84eaf78dbd873",
+   "passed": true,
+   "rationale": "States true for finite graphs (valid longest-path proof) and false for infinite graphs (bi-infinite path counterexample); matches reference including the caveat."
+  },
+  {
+   "id": "hard-13",
+   "content_sha256": "ba36a65dd2e3fa1c13f0bfcc4d8d862610c64896cb7ce496bd61bd8c06001495",
+   "passed": true,
+   "rationale": "Each ant travels 2/3 (approach speed 3/2, t=2/3, speed 1); matches reference."
+  },
+  {
+   "id": "hard-14",
+   "content_sha256": "6a4ba3e521f183793c70089e9789f6cc443d95415b1591ac4601f2f6858dc6a2",
+   "passed": true,
+   "rationale": "256 = 2^(2^3) by pairing x with its complement; matches reference."
+  },
+  {
+   "id": "hard-15",
+   "content_sha256": "1e37d906873bf7fa4a1f4d46c6792b6391821c401ab117cdbbc487f34be07746",
+   "passed": true,
+   "rationale": "Sum equals (1-1)^17 = 0; matches reference."
+  },
+  {
+   "id": "hard-16",
+   "content_sha256": "a59a27cb3d7375ba52a22ef8baa887ecc6e7634b496845008424bfed6f1dc1a6",
+   "passed": true,
+   "rationale": "Lift height h = 1/(2 pi) metres, independent of R; matches reference."
+  },
+  {
+   "id": "hard-17",
+   "content_sha256": "83813cbcf53ed4689a1da748f0a0699b6d3822ba93790ebf59ed3f8d1614e7b1",
+   "passed": true,
+   "rationale": "Identifies the look-and-say sequence and gives the recursive run-length definition, noting there is no simple closed form; matches reference (task wording asks for a closed form but the reference accepts the recurrence)."
+  },
+  {
+   "id": "hard-18",
+   "content_sha256": "bdbdf0ac2ea36e859d25e1fd2c67c9fb930b3811616121dbbbb9725c9ab7b1ca",
+   "passed": true,
+   "rationale": "Pigeonhole on four 1/2 x 1/2 subsquares with diagonal sqrt(2)/2; matches reference."
+  },
+  {
+   "id": "hard-19",
+   "content_sha256": "10b6a7be1216ffa72230fae69cb3f05c4155cc535f2e004f759882af6ddb90c9",
+   "passed": true,
+   "rationale": "Counts 2 of 6 outcomes with sum 7 containing a 6, giving 1/3; matches reference."
+  }
+ ]
+}

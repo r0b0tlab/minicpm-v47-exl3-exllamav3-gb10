@@ -29,7 +29,10 @@ its invariants and makes them machine-checkable. `protocol.json` is the machine-
 
 1. **One pin, three views.** `runtime.lock.json`, `config/model.yaml` and the commits / revisions / torch version
    quoted in the README must agree; evidence bundles of the same engine must name the pinned commit
-   (`verify_tree.py`, class 30).
+   (`verify_tree.py`, class 30). The pin may name the branch the runtime is built from and its base commit
+   (`base_commit`, `bundle_commits` in `runtime.lock.json`): a bundle measured on the base commit, for example a
+   plain-decode run that predates the drafting branch, is accepted as long as the drafting branch leaves that
+   path unchanged, and says so in its own bundle.
 2. **Models are data.** No model constant (repo name, shard count, vocabulary, window, KV size, stop id) is
    hard-coded in shell or in the click-run driver; it comes from `config/model.yaml` and `config/profiles.yaml`.
 3. **Stages, receipts, resumability.** `click_run.sh` is a fixed sequence of named stages. A stage that ran writes

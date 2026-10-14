@@ -25,8 +25,10 @@ Behaviour that matters for graders and clients:
     max_batch_size (1 unless a profile says otherwise and it was verified, docs/RESULTS.md)
   * a bad request returns an error and the server lives; ids >= vocab_size (head padding)
     are asserted never to be generated
-  * --draft DIR enables DSpark drafting if (and only if) the ExLlamaV3 build supports it;
-    otherwise the server refuses to start with a clear message.
+  * --draft DIR attaches the DSpark block drafter (15 drafts per round, Markov walk over the top-64
+    candidates, adaptive verification by default: it verifies as many drafts as pay off under the
+    measured cost model of config/profiles.yaml); builds without drafting refuse with a clear message.
+    Greedy output equals plain decoding up to fp16 kernel noise, not bit for bit.
 
 Run through ./run.sh, or directly:
   python scripts/serve_openai.py --model-dir MODEL_DIR --profile gb10-text-262k --port 8000
@@ -68,6 +70,28 @@ def mem_available_gib():
 
 # ---------------------------------------------------------------------------- engine
 
+def resolve_draft_settings(prof, args):
+    """Drafting settings: the profile's draft block, overridden by --draft-mode / --num-draft-tokens /
+    --markov-top-k. Returns None without --draft. A profile without a draft block gets the defaults
+    (adaptive, 15 drafts, K = 64, the library's default cost model)."""
+    if not args.draft:
+        return None
+    base = cfg.draft_settings(prof) or {"enabled": True, "mode": "adaptive", "num_draft_tokens": 15,
+                                        "markov_top_k": 64, "verify_cost_ms": None, "draft_cost_ms": None}
+    d = dict(base)
+    if getattr(args, "draft_mode", None):
+        d["mode"] = args.draft_mode
+    if getattr(args, "num_draft_tokens", 0):
+        d["num_draft_tokens"] = args.num_draft_tokens
+    if getattr(args, "markov_top_k", 0):
+        d["markov_top_k"] = args.markov_top_k
+    if d["mode"] not in ("adaptive", "fixed"):
+        raise ValueError("draft mode must be adaptive or fixed")
+    if not 1 <= int(d["num_draft_tokens"]) <= 15:
+        raise ValueError("num_draft_tokens must be 1..15")
+    return d
+
+
 class GenRequest(object):
     def __init__(self, input_ids, sp, stop_ids, want_ids=False, min_new=0):
         self.id = uuid.uuid4().hex
@@ -85,6 +109,7 @@ class GenRequest(object):
 class Engine(object):
     def __init__(self, args, prof, facts):
         self.args, self.prof, self.facts = args, prof, facts
+        self.draft_cfg = resolve_draft_settings(prof, args)
         self.window = int(prof["window_tokens"])
         self.vocab = int(facts["vocab_size"])
         self.ready = False
@@ -115,7 +140,9 @@ class Engine(object):
         if a.draft:
             draft_config = Config.from_directory(a.draft)
             draft_model = Model.from_config(draft_config)
-        max_history = int(draft_model.caps.get("default_draft_size", 4)) if draft_model else 0
+        # hybrid (recurrent) targets keep one state snapshot per verified row: max_history covers the drafts
+        max_history = max(int(self.draft_cfg["num_draft_tokens"]),
+                          int(draft_model.caps.get("default_draft_size", 4))) if draft_model else 0
 
         def make_cache(m, **extra):
             if prof["kv_bits"] >= 16:
@@ -133,9 +160,16 @@ class Engine(object):
                              max_batch_size=prof["max_batch_size"])
         kwargs = {}
         if draft_model is not None:
-            kwargs.update(draft_model=draft_model, draft_cache=draft_cache)
-            if a.num_draft_tokens:
-                kwargs["num_draft_tokens"] = a.num_draft_tokens
+            dc = self.draft_cfg
+            if hasattr(draft_model, "markov_top_k"):
+                draft_model.markov_top_k = int(dc["markov_top_k"])
+            if hasattr(draft_model, "adaptive_verification"):
+                draft_model.adaptive_verification = dc["mode"] == "adaptive"
+            if dc.get("verify_cost_ms") and hasattr(draft_model, "set_verify_cost"):
+                draft_model.set_verify_cost([float(x) for x in dc["verify_cost_ms"]],
+                                            float(dc.get("draft_cost_ms") or 0.0))
+            kwargs.update(draft_model=draft_model, draft_cache=draft_cache,
+                          num_draft_tokens=int(dc["num_draft_tokens"]))
         self.generator = Generator(
             model, cache, self.tokenizer, max_batch_size=prof["max_batch_size"],
             max_chunk_size=prof["chunk_size"], recurrent_cache_size=int(float(prof["recurrent_cache_gib"]) * 1024 ** 3),
@@ -148,6 +182,7 @@ class Engine(object):
             "in use, includes page cache); MemAvailable %s GiB" % (
                 self.load_seconds, torch.cuda.memory_allocated() / 1024 ** 3, torch.cuda.memory_reserved() / 1024 ** 3,
                 (total1 - free1) / 1024 ** 3, total1 / 1024 ** 3, mem_available_gib()))
+        self.draft_model = draft_model
         if draft_model is not None:
             self._probe_draft()
         stop_ids = [int(i) for i in self.facts.get("stop_token_ids") or []]
@@ -174,7 +209,10 @@ class Engine(object):
                 for r in self.generator.iterate():
                     n += 1
             self.draft_active = True
-            log("draft probe ok: drafting active (%s)" % self.args.draft)
+            dc = self.draft_cfg
+            log("draft probe ok: drafting active (%s mode, %d drafts per round, Markov top-%d, cost model %s)" % (
+                dc["mode"], dc["num_draft_tokens"], dc["markov_top_k"],
+                "measured" if dc.get("verify_cost_ms") else "library default"))
         except NotImplementedError as exc:
             log("DRAFT UNSUPPORTED: this ExLlamaV3 build cannot run the DSpark drafter (%s)" % exc)
             log("start without --draft / DRAFT_DIR, or use a build whose draft path is implemented")
@@ -425,7 +463,9 @@ class Handler(BaseHTTPRequestHandler):
         return {"id": SERVED_NAME, "object": "model", "created": int(ENGINE.m["started"]), "owned_by": "local",
                 "max_model_len": ENGINE.window, "modalities": ["text"], "profile": ENGINE.prof["name"],
                 "chunk_size": ENGINE.prof["chunk_size"], "kv_bits": ENGINE.prof["kv_bits"],
-                "max_batch_size": ENGINE.prof["max_batch_size"], "drafting": ENGINE.draft_active}
+                "max_batch_size": ENGINE.prof["max_batch_size"], "drafting": ENGINE.draft_active,
+                "draft": ({"mode": ENGINE.draft_cfg["mode"], "num_draft_tokens": ENGINE.draft_cfg["num_draft_tokens"],
+                           "markov_top_k": ENGINE.draft_cfg["markov_top_k"]} if ENGINE.draft_active else None)}
 
     def _metrics(self):
         m = dict(ENGINE.m)
@@ -715,7 +755,10 @@ def build_parser():
     ap.add_argument("--port", type=int, default=8000)
     ap.add_argument("--draft", default=os.environ.get("DRAFT_DIR") or None,
                     help="DSpark draft directory (needs an ExLlamaV3 build with drafting; refuses otherwise)")
-    ap.add_argument("--num-draft-tokens", type=int, default=0)
+    ap.add_argument("--num-draft-tokens", type=int, default=0, help="drafts verified per round, 1..15 (default: profile)")
+    ap.add_argument("--draft-mode", choices=("adaptive", "fixed"), default=None,
+                    help="adaptive verification (default) or always verify num_draft_tokens")
+    ap.add_argument("--markov-top-k", type=int, default=0, help="candidates per row of the Markov walk (default 64)")
     ap.add_argument("--window", type=int, default=0, help="override the profile's window_tokens")
     ap.add_argument("--chunk-size", type=int, default=0, help="override the profile's prefill chunk size")
     ap.add_argument("--max-batch-size", type=int, default=0, help="override the profile's max_batch_size")

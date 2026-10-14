@@ -19,6 +19,10 @@ model:
   # modalities this runtime serves (the checkpoint itself also does image/video)
   modalities_served: [text]
   modalities_model: [text, image, video]
+  # DSpark block drafter (artifact "draft"): K/V bytes per context token of its 5 full-attention layers
+  # (5 layers x 2 x 2 KV heads x 256 x 2 B) and the drafts it proposes per round
+  draft_kv_bytes_per_token: 10240
+  draft_block_size: 15
   # memory arithmetic inputs (docs/MEMORY.md derives each number)
   kv_bytes_per_token: 20480        # fp16 K+V, 10 full-attention layers x 2 x 2 KV heads x 256 x 2 B
   recurrent_state_bytes: 64389120  # gated-delta-net state per sequence slot, independent of context
@@ -137,7 +141,7 @@ artifacts:
         size: 8976
         sha256: 03c8faa31145d89c815b86dffc9aa7fa732ebebb5cb1a47b1663c17d0477eab9
   draft:
-    # DSpark block drafter. ExLlamaV3 cannot run it (README: "What runs where");
+    # DSpark block drafter. ExLlamaV3 runs it on the minicpm-v4.7-dspark branch (README: "What runs where");
     # it is downloaded only with --with-draft, for engines that implement DSpark.
     hf_repo: r0b0tlab/MiniCPM-V-4.7-35B-A3B-DSpark-EXL3-6.00bpw
     revision: 34c6b7758cbe79b4e8023b2007b93ecc2f026bf3

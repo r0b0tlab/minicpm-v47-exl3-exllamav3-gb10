@@ -31,7 +31,7 @@ COLUMNS = [
 ]
 PENDING = "pending"
 FAMILY_LABEL = {"gsm8k": "GSM8K-style math (80)", "humaneval": "HumanEval-style code (40)",
-                "ifeval": "IFEval-style instruction following (40)", "hard_reasoning": "Hard reasoning (20, graded manually)"}
+                "ifeval": "IFEval-style instruction following (40)", "hard_reasoning": "Hard reasoning (20, AI-graded, see notes)"}
 DEPTH_TARGETS = [("~4k", 4096), ("~32k", 32768), ("~128k", 131072), ("~261k", 261000)]
 DRAFT_COMMAND = ("DRAFT_DIR=models/MiniCPM-V-4.7-35B-A3B-DSpark-EXL3-6.00bpw ./run.sh --with-draft --yes && "
                  "eval/run_suite.sh http://127.0.0.1:8000 exllamav3-dspark")
@@ -94,16 +94,34 @@ def q200(bundle, key="q200"):
     return (bundle or {}).get("results", {}).get(key)
 
 
+def legd_value(bundle, kind, mode, cls, field="tok_s_mean"):
+    """Leg D number of one kind of decode: plain, drafted (adaptive verification) or fixed15 (always 15 drafts).
+
+    Reference-engine bundles hold the report's arms ("ar" plain, "d6" drafted); this repository's bundles hold
+    results.legd (primary run), results.legd_plain_ctl (plain control on the drafting build) and
+    results.legd_fixed15, keyed "<mode>/<class>"."""
+    if not bundle:
+        return None
+    res = bundle.get("results", {}).get("legd") or {}
+    col = bundle.get("column")
+    if "one_stream" in res:                                  # reference-engine layout
+        arm = {"plain": "ar", "drafted": "d6"}.get(kind)
+        cell = (res["one_stream"].get(mode, {}).get(cls, {}).get(arm) or {}) if arm else {}
+        return cell.get("tok_s") if field == "tok_s_mean" else None
+    if col == "exllamav3-plain":
+        src = res if kind == "plain" else None
+    elif col == "exllamav3-dspark":
+        src = {"plain": bundle["results"].get("legd_plain_ctl"), "drafted": res,
+               "fixed15": bundle["results"].get("legd_fixed15")}.get(kind)
+    else:
+        src = None
+    cell = (src or {}).get("%s/%s" % (mode, cls))
+    return cell.get(field) if cell else None
+
+
 def legd_cell(bundle, mode, cls, arm):
-    res = ((bundle or {}).get("results", {}).get("legd") or {})
-    if "one_stream" in res:                      # reference-engine layout
-        cell = (res["one_stream"].get(mode, {}).get(cls, {}).get(arm) or {})
-        return cell.get("tok_s")
-    cell = res.get("%s/%s" % (mode, cls))        # this repo's run_legd summary
-    own_arm = "ar" if (bundle or {}).get("column") == "exllamav3-plain" else "d6"
-    if cell and arm == own_arm:
-        return cell.get("tok_s_mean")
-    return None
+    """Back-compatible accessor used by older callers: arm 'ar' = plain, anything else = drafted."""
+    return legd_value(bundle, "plain" if arm == "ar" else "drafted", mode, cls)
 
 
 def legd_streams(bundle):
@@ -161,13 +179,24 @@ def block_results_summary(bundles):
     add("Cold time to first token at ~261k (s)", lambda b: fnum(depth_value(b, 261000, "ttft_cold_s"), 1))
     add("Needle retrieval (22 questions, token-exact)",
         lambda b: "%d/%d exact" % (b["results"]["niah"]["exact"], b["results"]["niah"]["asked"]))
-    for cls, label in (("gsm8k", "GSM8K-style"), ("code", "code"), ("chat", "chat")):
-        add("Leg D decode tok/s, %s, plain" % label, lambda b, c=cls: fnum(legd_cell(b, "greedy", c, "ar")))
-    for cls, label in (("gsm8k", "GSM8K-style"), ("code", "code"), ("chat", "chat")):
-        def drafted(b, c=cls):
-            v = legd_cell(b, "greedy", c, "d6")
-            return fnum(v) if v is not None else ("n/a" if b.get("column") == "exllamav3-plain" else "-")
-        add("Leg D decode tok/s, %s, drafted" % label, drafted)
+    for kind, kind_label in (("plain", "plain"), ("drafted", "drafted, adaptive verification"),
+                             ("fixed15", "drafted, always 15 drafts")):
+        for cls, label in (("gsm8k", "GSM8K-style"), ("code", "code"), ("chat", "chat")):
+            def cell(b, k=kind, c=cls):
+                v = legd_value(b, k, "greedy", c)
+                if v is not None:
+                    return fnum(v)
+                return "n/a" if b.get("column") == "exllamav3-plain" else "-"
+            add("Leg D decode tok/s, %s, %s" % (label, kind_label), cell)
+
+    def identical(b):
+        c = ((b.get("results", {}).get("legd") or {}).get("greedy/all") or {})
+        if b.get("column") == "exllamav3-dspark" and c.get("compared"):
+            return "%d/%d" % (c["identical_to_plain"], c["compared"])
+        if b.get("column") == "reference-engine":
+            return "80/80 (bit-identical by construction and checked)"
+        return "n/a"
+    add("Leg D greedy streams identical to plain decoding", identical)
 
     def resident(b):
         m = b["results"]["memory"]
@@ -241,14 +270,36 @@ def block_niah_table(bundles):
 
 def block_legd_table(bundles):
     rows = []
+    kinds = (("plain", "plain"), ("drafted", "drafted, adaptive verification"), ("fixed15", "drafted, always 15 drafts"))
     for mode in ("greedy", "sampled"):
         for cls in ("gsm8k", "code", "chat", "all"):
-            rows.append(["%s, %s, plain" % (mode, cls)] + row_cells(
-                bundles, lambda b, m=mode, c=cls: fnum(legd_cell(b, m, c, "ar"))))
-            rows.append(["%s, %s, drafted" % (mode, cls)] + row_cells(
-                bundles, lambda b, m=mode, c=cls: fnum(legd_cell(b, m, c, "d6")) if legd_cell(b, m, c, "d6") is not None
-                else ("n/a" if b.get("column") == "exllamav3-plain" else "-")))
-    return table(["Leg D decode tok/s, one stream, thinking off, up to 320 tokens"] + [c[1] for c in COLUMNS], rows)
+            for kind, label in kinds:
+                def cell(b, m=mode, c=cls, k=kind):
+                    v = legd_value(b, k, m, c)
+                    if v is not None:
+                        return fnum(v)
+                    return "n/a" if b.get("column") == "exllamav3-plain" else "-"
+                rows.append(["%s, %s, %s" % (mode, cls, label)] + row_cells(bundles, cell))
+    d = bundles.get("exllamav3-dspark")
+    text = table(["Leg D decode tok/s, one stream, thinking off, up to 320 tokens"] + [c[1] for c in COLUMNS], rows)
+    if d:
+        extra = []
+        for kind, label in (("drafted", "adaptive verification"), ("fixed15", "always 15 drafts")):
+            for cls in ("gsm8k", "code", "chat", "all"):
+                src = d["results"].get("legd" if kind == "drafted" else "legd_fixed15") or {}
+                c = src.get("greedy/%s" % cls)
+                if not c:
+                    continue
+                plain = (d["results"].get("legd_plain_ctl") or {}).get("greedy/%s" % cls) or {}
+                speed = (c["tok_s_mean"] / plain["tok_s_mean"]) if plain.get("tok_s_mean") else None
+                extra.append([label, cls, fnum(c["tok_s_mean"]), "%.2fx" % speed if speed else "-",
+                              "%.1f%%" % (100 * c["accept_rate"]) if c.get("accept_rate") is not None else "-",
+                              "%s/%s" % (c.get("identical_to_plain", "-"), c.get("compared", "-"))])
+        if extra:
+            text += "\n\nExLlamaV3 + DSpark, greedy arm. The speed-up is against the plain run of 2026-10-13 (a different session; no same-session control was run), and '-' means that run is not in the bundle:\n\n" + table(
+                ["verification", "class", "tok/s", "speed-up", "drafts accepted", "streams identical to plain"], extra,
+                ["---", "---", "---:", "---:", "---:", "---:"])
+    return text
 
 
 def block_memory_table(bundles):
@@ -373,6 +424,23 @@ def block_warmup_table(bundles):
                                                rows, ["---", "---", "---:", "---"])
 
 
+def block_draft_table(bundles):
+    d = bundles.get("exllamav3-dspark")
+    if not d:
+        return "_no drafted bundle_"
+    dr = d["results"].get("draft") or {}
+    vc = dr.get("verify_cost_ms") or []
+    text = ("Drafting settings of the measured runs: mode %s, %s drafts per round, Markov walk over the top %s candidates, "
+            "draft pack %s." % (dr.get("mode"), dr.get("num_draft_tokens"), dr.get("markov_top_k"), dr.get("draft_pack", "")))
+    if vc:
+        rows = [[str(i + 1), "%.1f" % v] for i, v in enumerate(vc)]
+        half = (len(rows) + 1) // 2
+        grid = [rows[i] + (rows[i + half] if i + half < len(rows) else ["", ""]) for i in range(half)]
+        text += "\n\nMeasured cost model (ms; one verify pass over n rows, 300 committed tokens; draft side of a round %.1f ms):\n\n" % (
+            dr.get("draft_cost_ms") or 0) + table(["rows", "ms", "rows", "ms"], grid, ["---:", "---:", "---:", "---:"])
+    return text
+
+
 def block_clickrun_table(bundles):
     b = bundles.get("exllamav3-plain")
     cr = ((b or {}).get("results") or {}).get("clickrun")
@@ -411,6 +479,7 @@ BLOCKS = {
     "legd-table": block_legd_table,
     "memory-table": block_memory_table,
     "clickrun-table": block_clickrun_table,
+    "draft-table": block_draft_table,
     "depthscan-table": block_depthscan_table,
     "chunk-table": block_chunk_table,
     "warmup-table": block_warmup_table,

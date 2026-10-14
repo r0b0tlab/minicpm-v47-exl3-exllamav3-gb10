@@ -38,6 +38,7 @@ server is healthy; `./run.sh --from <stage>` / `--only <stage>` / `--force` re-r
 | <a id="e_serve_exit"></a>`E_SERVE_EXIT` | serve | The server process exited before it was ready. | Read the log tail printed above (`.state/logs/serve.log`) and `scripts/env_report.sh` output. |
 | <a id="e_serve_timeout"></a>`E_SERVE_TIMEOUT` | serve | The server did not become ready within READY_TIMEOUT seconds. | Look at `.state/logs/serve.log`; a cold load of the 26 GiB pack can take minutes on slow disks: `READY_TIMEOUT=3600 ./run.sh`. |
 | <a id="e_smoke"></a>`E_SMOKE` | smoke | A smoke request failed (HTTP error, wrong answer, or malformed response). | Read the failing check above; the server stays up for inspection: `curl -s http://127.0.0.1:8000/health`. |
+| <a id="e_draft"></a>`E_DRAFT` | serve | The DSpark drafter could not be attached: the ExLlamaV3 build has no drafting path, or the draft pack failed to load or to produce drafts. | Use the pinned build (`./run.sh --force --only build`), check the draft pack with `./run.sh --only verify-model --with-draft`, or serve without drafting (`PROFILE=gb10-text-262k ./run.sh`). |
 | <a id="e_guard"></a>`E_GUARD` | serve | The optional memory guard (GUARD=1) could not start. | Unset GUARD or read `.state/logs/guard.log`. |
 <!-- END GENERATED:error-codes -->
 

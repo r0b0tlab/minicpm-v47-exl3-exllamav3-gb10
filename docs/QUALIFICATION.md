@@ -3,7 +3,7 @@
 What was exercised on which pins, what passed, and what is explicitly **not** qualified. The numbers behind each
 line are in [RESULTS.md](RESULTS.md) and in the hash-listed bundles under `evidence/`.
 
-Pins: ExLlamaV3 `4d083d25c1a3` (branch `minicpm-v4.7`), torch 2.14.0+cu130, CUDA toolkit 13.0.88, driver
+Pins: ExLlamaV3 `5ddae7d12448` (branch `minicpm-v4.7-dspark`; the plain-decode gates below were measured on its base commit `4d083d25c1a3`), torch 2.14.0+cu130, CUDA toolkit 13.0.88, driver
 580.173.02, Python 3.12.3, one NVIDIA GB10 (aarch64, SM121), pack `8f9f07872b09`, profile `gb10-text-262k`
 (262,144-token window, fp16 KV, chunk 2,048, batch size 1).
 
@@ -45,9 +45,8 @@ labelled experimental.
 ## Not qualified
 
 - Concurrency above one request as a *qualified* setting (see Batching: exercised, accuracy-neutral, not token-exact).
-- DSpark drafting: the pinned ExLlamaV3 build converts and loads the draft but cannot run it; the server refuses
-  `--draft` with a clear message. The "ExLlamaV3 + DSpark" column of the results is a placeholder until a build
-  supports it.
+- DSpark drafting: the loader branch `minicpm-v4.7-dspark` runs the draft; builds without the drafting path refuse
+  `--draft` with a clear message. Drafted results are in `evidence/exllamav3-drafted-20261014`.
 - Image, video and audio input (text path only).
 - Long-run stability: no soak test; no thermal or power study.
 - Quantised KV cache (`kv_bits` below 16): the profiles that exist use fp16.

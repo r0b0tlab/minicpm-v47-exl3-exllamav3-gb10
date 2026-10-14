@@ -27,7 +27,7 @@ class BootstrapTest(unittest.TestCase):
         git("init", "-q", "-b", "main", cwd=origin)
         git("add", "-A", cwd=origin)
         git("commit", "-q", "-m", "x", cwd=origin)
-        git("tag", "v2.0.0", cwd=origin)
+        git("tag", "v2.1.0", cwd=origin)
         return td, origin
 
     def run_bootstrap(self, td, origin):

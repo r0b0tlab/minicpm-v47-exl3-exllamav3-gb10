@@ -96,3 +96,46 @@ def write_bundle(directory, doc):
         json.dump(doc, fh, indent=1, sort_keys=False)
         fh.write("\n")
     write_manifest(directory)
+
+
+def _mean_se(xs):
+    xs = [x for x in xs if x is not None]
+    n = len(xs)
+    if n == 0:
+        return None, None, 0
+    m = sum(xs) / n
+    if n < 2:
+        return m, None, n
+    var = sum((x - m) ** 2 for x in xs) / (n - 1)
+    return m, (var / n) ** 0.5, n
+
+
+def legd_from_rows(rows, compare_rows=None, streams=1):
+    """Per mode/class summary of a Leg D rows file (run_legd.py): tok/s mean +- s.e., pooled tok/s, mean tokens,
+    stop counts, drafting counters, and (with compare_rows) how many streams equal the other run's, by sha256."""
+    other = {}
+    for r in compare_rows or []:
+        other[(r["mode"], r["name"])] = r["tokens_sha256"]
+    out = {}
+    for mode in ("greedy", "sampled"):
+        for cls in ("gsm8k", "code", "chat", "all"):
+            rs = [r for r in rows if r["mode"] == mode and (cls == "all" or r["class"] == cls)]
+            if not rs:
+                continue
+            m, se, n = _mean_se([r.get("tok_s") for r in rs])
+            dsum = sum(r.get("decode_s") or 0 for r in rs)
+            pooled = sum(r.get("decode_tokens", 0) for r in rs) / dsum if dsum else None
+            cell = {"n": n, "tok_s_mean": m, "tok_s_se": se, "tok_s_pooled": pooled,
+                    "mean_tokens": sum(r["tokens"] for r in rs) / len(rs),
+                    "stopped": sum(1 for r in rs if r.get("stopped")), "streams": streams}
+            acc = sum(r.get("accepted", 0) for r in rs)
+            rej = sum(r.get("rejected", 0) for r in rs)
+            if any("accepted" in r for r in rs):
+                cell.update(accepted=acc, rejected=rej, accept_rate=(acc / (acc + rej)) if acc + rej else None,
+                            accepted_per_token=acc / max(1, sum(r["tokens"] for r in rs)))
+            if other:
+                comp = [r for r in rs if (r["mode"], r["name"]) in other]
+                cell.update(compared=len(comp),
+                            identical_to_plain=sum(1 for r in comp if other[(r["mode"], r["name"])] == r["tokens_sha256"]))
+            out["%s/%s" % (mode, cls)] = cell
+    return out

@@ -7,9 +7,11 @@ from the pinned revisions in `runtime.lock.json` and `requirements.txt` on the u
 ## ExLlamaV3 (build dependency and runtime)
 
 - Upstream: https://github.com/turboderp-org/exllamav3 (turboderp), MIT, Copyright (c) 2025 Turboderp
-- Fork used: https://github.com/r0b0tlab/exllamav3, branch `minicpm-v4.7`, commit
+- Fork used: https://github.com/r0b0tlab/exllamav3-r0b0t, branch `minicpm-v4.7-dspark`, commit
+  `5ddae7d124482aa9e705c3a4aedf02cf8d09911b`, on top of branch `minicpm-v4.7` commit
   `4d083d25c1a3e195ce1305623ffa1eef84b834fe` (ExLlamaV3 v1.5.0 base, aarch64 / sm_121 build fixes, the
-  MiniCPM-V-4.7 text architecture, a DSpark draft quantisation shim). MIT.
+  MiniCPM-V-4.7 text architecture, a DSpark draft quantisation shim; the dspark branch adds DSpark block
+  drafting, whose semantics follow the Apache-2.0 vLLM reference implementation). MIT.
 - `scripts/serve_openai.py` imports it; `scripts/click_run.sh` clones and compiles it.
 
 ## Model: MiniCPM-V-4.7-35B-A3B

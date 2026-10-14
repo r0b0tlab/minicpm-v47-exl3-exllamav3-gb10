@@ -45,6 +45,7 @@ class RenderResultsTest(unittest.TestCase):
 
     def test_a_drafted_bundle_fills_the_pending_column(self):
         b = rr.load_bundles(ROOT)
+        b.pop("exllamav3-dspark", None)  # the state before the shipped drafted bundle existed: the column is pending
         before = rr.render_block("results-summary", b)
         self.assertIn("pending", before)
         b["exllamav3-dspark"] = {

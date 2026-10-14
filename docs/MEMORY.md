@@ -7,16 +7,20 @@ retired before loading.
 
 ## Budget (per profile; `scripts/cfg.py need <profile>`)
 
-| item | how it is computed | 262k | 32k | 16k low-mem |
-|---|---|---:|---:|---:|
-| weights (pack shards on disk) | sum of shard sizes in `config/model.yaml` | 26.35 GiB | 26.35 | 26.35 |
-| KV cache, fp16 | 20,480 B/token x window (10 full-attention layers x 2 x 2 KV heads x 256 x 2 B) | 5.00 GiB | 0.62 | 0.31 |
-| recurrent state (gated delta net) | 64,389,120 B per sequence slot, independent of context | 0.06 GiB | 0.06 | 0.06 |
-| host recurrent-state checkpoint store | profile `recurrent_cache_gib` (prefix reuse) | 1.00 GiB | 1.00 | 0.25 |
-| workspace | profile `workspace_gib` (activations, MoE staging, CUDA context, allocator slack) | 4.00 GiB | 3.00 | 2.00 |
-| **resident total** | sum | **36.41 GiB** | 31.04 | 28.98 |
-| headroom that must stay free | profile `headroom_gib` | 8.00 GiB | 8.00 | 6.00 |
-| **`MemAvailable` required** | | **44.41 GiB** | 39.04 | 34.98 |
+| item | how it is computed | 262k | 32k | 16k low-mem | 262k + DSpark draft |
+|---|---|---:|---:|---:|---:|
+| weights (pack shards on disk) | sum of shard sizes in `config/model.yaml` | 26.35 GiB | 26.35 | 26.35 | 26.35 |
+| KV cache, fp16 | 20,480 B/token x window (10 full-attention layers x 2 x 2 KV heads x 256 x 2 B) | 5.00 GiB | 0.62 | 0.31 | 5.00 |
+| recurrent state (gated delta net) | 64,389,120 B per sequence slot, independent of context | 0.06 GiB | 0.06 | 0.06 | 0.06 |
+| host recurrent-state checkpoint store | profile `recurrent_cache_gib` (prefix reuse) | 1.00 GiB | 1.00 | 0.25 | 1.00 |
+| draft weights | the draft pack on disk (451 MB, 6.0 bpw) | - | - | - | 0.42 GiB |
+| draft K/V cache | 10,240 B/token x window (`draft_kv_bytes_per_token`) | - | - | - | 2.50 GiB |
+| recurrent snapshots for rewind | 16 x 64,389,120 B (one per drafted position, `max_history`) | - | - | - | 0.96 GiB |
+| draft workspace | profile `draft.workspace_gib` | - | - | - | 0.50 GiB |
+| workspace | profile `workspace_gib` (activations, MoE staging, CUDA context, allocator slack) | 4.00 GiB | 3.00 | 2.00 | 4.00 |
+| **resident total** | sum | **36.41 GiB** | 31.04 | 28.98 | **40.79 GiB** |
+| headroom that must stay free | profile `headroom_gib` | 8.00 GiB | 8.00 | 6.00 | 8.00 |
+| **`MemAvailable` required** | | **44.41 GiB** | 39.04 | 34.98 | **48.79 GiB** |
 
 The vision tower, window merger and projector (1.1 GB, bf16) are in the shards but are not loaded by ExLlamaV3, so
 the loaded weights are about 1 GiB below the on-disk figure; the arithmetic keeps the larger number on purpose.

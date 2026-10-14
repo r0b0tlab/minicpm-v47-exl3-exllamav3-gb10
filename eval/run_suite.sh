@@ -10,6 +10,7 @@
 #   bench  decode / prefill / TTFT grid at 1k / 4k / 32k / 128k / 261k, 3 cold repeats, medians (scripts/bench.py)
 #   niah   22 token-exact needle questions over a 261,001-token document, greedy, thinking off (scripts/exact_niah.py)
 #   legd   the frozen 80-prompt plain-vs-drafted kit: greedy 80 + sampled 30, thinking off, <= 320 tokens
+#          (PLAIN_ROWS=path/to/plain.rows.jsonl counts the drafted streams identical to the plain ones)
 #   q200   Q200v2 text-180 with the public kit's runner (eval/q200/run_q200.sh); needs docker + SANDBOX_IMAGE_ID
 #
 # Raw outputs go to .state/eval/<label>-<date>/ (not committed); the bundle goes to evidence/<label>-<date>/ with
@@ -64,8 +65,9 @@ args=(--out "$BUNDLE" --id "$LABEL-$DATE" --column "$COLUMN" --engine-name "$ENG
 [[ -f "$RAW/smoke.json" ]] && args+=(--smoke "$RAW/smoke.json")
 [[ -f "$RAW/bench.json" ]] && args+=(--bench "$RAW/bench.json")
 [[ -f "$RAW/niah.json" ]] && args+=(--niah "$RAW/niah.json")
-if [[ -f "$RAW/legd-$COLUMN-s$STREAMS.summary.json" ]]; then
-  args+=(--legd-summary "$RAW/legd-$COLUMN-s$STREAMS.summary.json" --legd-rows "$RAW/legd-$COLUMN-s$STREAMS.rows.jsonl")
+if [[ -f "$RAW/legd-$COLUMN-s$STREAMS.rows.jsonl" ]]; then
+  # PLAIN_ROWS: the plain (no draft) rows of the same kit; counts how many drafted streams are identical to them
+  args+=(--legd-run "=$RAW/legd-$COLUMN-s$STREAMS.rows.jsonl${PLAIN_ROWS:+:$PLAIN_ROWS}")
 fi
 Q200_ROWS="$(compgen -G "$RAW/q200/q200-w$WORKERS.rows.jsonl" || true)"
 if [[ -n "$Q200_ROWS" ]]; then
