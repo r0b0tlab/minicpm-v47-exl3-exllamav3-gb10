@@ -27,7 +27,6 @@ sys.path.insert(0, HERE)
 COLUMNS = [
     ("exllamav3-plain", "ExLlamaV3, plain decode (this repo's runtime)"),
     ("exllamav3-dspark", "ExLlamaV3 + DSpark drafting"),
-    ("reference-engine", "Reference engine: DSpark drafting + vision (not reproducible here)"),
 ]
 PENDING = "pending"
 FAMILY_LABEL = {"gsm8k": "GSM8K-style math (80)", "humaneval": "HumanEval-style code (40)",
@@ -97,17 +96,13 @@ def q200(bundle, key="q200"):
 def legd_value(bundle, kind, mode, cls, field="tok_s_mean"):
     """Leg D number of one kind of decode: plain, drafted (adaptive verification) or fixed15 (always 15 drafts).
 
-    Reference-engine bundles hold the report's arms ("ar" plain, "d6" drafted); this repository's bundles hold
+    This repository's bundles hold
     results.legd (primary run), results.legd_plain_ctl (plain control on the drafting build) and
     results.legd_fixed15, keyed "<mode>/<class>"."""
     if not bundle:
         return None
     res = bundle.get("results", {}).get("legd") or {}
     col = bundle.get("column")
-    if "one_stream" in res:                                  # reference-engine layout
-        arm = {"plain": "ar", "drafted": "d6"}.get(kind)
-        cell = (res["one_stream"].get(mode, {}).get(cls, {}).get(arm) or {}) if arm else {}
-        return cell.get("tok_s") if field == "tok_s_mean" else None
     if col == "exllamav3-plain":
         src = res if kind == "plain" else None
     elif col == "exllamav3-dspark":
@@ -168,9 +163,9 @@ def block_results_summary(bundles):
     for fam in ("gsm8k", "humaneval", "ifeval", "hard_reasoning"):
         add("&nbsp;&nbsp;" + FAMILY_LABEL[fam], lambda b, fam=fam: frac(q200(b)["families"][fam]["passed"],
                                                                          q200(b)["families"][fam]["n"]))
-    add("Q200v2 end-to-end tok/s, 1 request in flight (reference column: with drafting)",
+    add("Q200v2 end-to-end tok/s, 1 request in flight",
         lambda b: fnum(q200(b)["e2e_tok_s"]))
-    add("Q200v2 end-to-end tok/s, 4 requests in flight (ExLlamaV3: experimental batch 4; reference: with drafting)",
+    add("Q200v2 end-to-end tok/s, 4 requests in flight (ExLlamaV3: experimental batch 4)",
         lambda b: fnum(q200(b, "q200_w4")["e2e_tok_s"]) if q200(b, "q200_w4") else "not run (batch 1)")
     for label, target in DEPTH_TARGETS:
         add("Decode tok/s at %s context" % label, lambda b, t=target: fnum(depth_value(b, t, "decode_tok_s")))
@@ -193,8 +188,6 @@ def block_results_summary(bundles):
         c = ((b.get("results", {}).get("legd") or {}).get("greedy/all") or {})
         if b.get("column") == "exllamav3-dspark" and c.get("compared"):
             return "%d/%d" % (c["identical_to_plain"], c["compared"])
-        if b.get("column") == "reference-engine":
-            return "80/80 (bit-identical by construction and checked)"
         return "n/a"
     add("Leg D greedy streams identical to plain decoding", identical)
 
@@ -339,37 +332,6 @@ def block_fidelity_kl(bundles):
                   "top-1 agreement", "ppl ratio"], rows)
 
 
-def _rows(bundle, lane_keys):
-    for key in lane_keys:
-        spec = (bundle.get("lanes") or {}).get(key)
-        if spec and spec.get("rows"):
-            path = os.path.join(bundle["_root"], bundle["_dir"], spec["rows"])
-            if os.path.isfile(path):
-                with open(path) as fh:
-                    return {json.loads(l)["id"]: json.loads(l) for l in fh if l.strip()}
-    return None
-
-
-def block_agreement_table(bundles):
-    a, b = bundles.get("exllamav3-plain"), bundles.get("reference-engine")
-    if not a or not b:
-        return "_agreement needs both the ExLlamaV3 and the reference bundle_"
-    ra, rb = _rows(a, ("q200",)), _rows(b, ("q200_w1", "q200"))
-    if not ra or not rb:
-        return "_row files not found_"
-    rows = []
-    for fam in ("gsm8k", "humaneval", "ifeval", "hard_reasoning", "all"):
-        ids = [i for i in ra if i in rb and (fam == "all" or ra[i]["family"] == fam)]
-        both = sum(1 for i in ids if ra[i]["passed"] is True and rb[i]["passed"] is True)
-        only_a = sum(1 for i in ids if ra[i]["passed"] is True and rb[i]["passed"] is not True)
-        only_b = sum(1 for i in ids if rb[i]["passed"] is True and ra[i]["passed"] is not True)
-        neither = len(ids) - both - only_a - only_b
-        same = sum(1 for i in ids if ra[i].get("content_sha256") and ra[i].get("content_sha256") == rb[i].get("content_sha256"))
-        rows.append([fam, len(ids), both, only_a, only_b, neither, same])
-    return table(["family", "rows", "both pass", "only ExLlamaV3 plain", "only reference engine", "neither",
-                  "byte-identical answer"], rows)
-
-
 def _lane_file(bundle, lane):
     spec = (bundle.get("lanes") or {}).get(lane)
     if not spec or not spec.get("file"):
@@ -483,7 +445,6 @@ BLOCKS = {
     "depthscan-table": block_depthscan_table,
     "chunk-table": block_chunk_table,
     "warmup-table": block_warmup_table,
-    "agreement-table": block_agreement_table,
     "fidelity-kl": block_fidelity_kl,
     "error-codes": block_error_codes,
 }

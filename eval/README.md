@@ -13,8 +13,7 @@ Same methods as the reference measurements, so results from different engines si
 | tokens | the server's prompt token count equals the Hugging Face `tokenizers` count (80 prompts) | `scripts/token_parity.py` | server, tokenizers |
 
 `eval/run_suite.sh BASE_URL LABEL` runs them and writes `evidence/<LABEL>-<date>/` (bundle.json, public rows,
-MANIFEST.sha256). `eval/tools/make_bundle.py` builds a bundle from lane outputs; `make_reference_bundle.py` and
-`make_fidelity_bundle.py` sanitise results measured elsewhere.
+MANIFEST.sha256). `eval/tools/make_bundle.py` builds a bundle from lane outputs; `make_fidelity_bundle.py` sanitises results measured elsewhere.
 
 Contents: `kit.lock.json` + `fetch_kit.sh` (pinned public kit, hash-verified), `shims/` (two modules the kit imports
 but does not ship), `sandbox/` + `build_sandbox.sh` (HumanEval sandbox image), `legd/` (80 prompts as token ids),

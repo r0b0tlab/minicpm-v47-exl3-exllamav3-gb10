@@ -104,7 +104,7 @@ mtime of every file, so unchanged shards are not re-hashed (`--verify-model` for
 | download | n/a (bind mounts) | anonymous, parallel, resumable, manifest-verified, size+mtime receipts |
 | results | hand-written tables | rendered from hash-listed bundles; drift fails a test |
 | evidence | `MANIFEST.sha256` per bundle | + `bundle.json` (method, kit hash, engine, commit, caveats, results) |
-| columns | one engine | plain / drafted / reference columns, each labelled and reproducibility-marked |
+| columns | one engine | plain / drafted columns, each labelled |
 | public check | review by hand | `scripts/check_public.sh` + tree check in CI |
 | host guard | required, privileged journal | optional `GUARD=1` MemAvailable floor with a bounded lease |
 | bootstrap | clone by hand | `scripts/bootstrap.sh`: pinned tag, hashes verified before anything runs |

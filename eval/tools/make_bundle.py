@@ -25,7 +25,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", required=True)
     ap.add_argument("--id", required=True)
-    ap.add_argument("--column", required=True, choices=("exllamav3-plain", "exllamav3-dspark", "reference-engine"))
+    ap.add_argument("--column", required=True, choices=("exllamav3-plain", "exllamav3-dspark"))
     ap.add_argument("--title", default="")
     ap.add_argument("--engine-name", default="ExLlamaV3")
     ap.add_argument("--engine-commit", default="")
@@ -167,7 +167,7 @@ def main(argv=None):
         "engine": {"name": a.engine_name, "commit": a.engine_commit, "mode": a.mode},
         "hardware": a.hardware, "date": a.date, "profile": a.profile,
         "model": {"repo": lock["models"]["target"]["hf_repo"], "revision": lock["models"]["target"]["revision"]},
-        "reproducible_with_this_repo": a.column != "reference-engine",
+        "reproducible_with_this_repo": True,
         "caveats": a.caveat, "note": a.note, "lanes": lanes, "results": results,
     }
     bl.write_bundle(out, doc)

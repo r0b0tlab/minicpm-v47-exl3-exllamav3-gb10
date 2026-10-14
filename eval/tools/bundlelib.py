@@ -1,4 +1,4 @@
-"""Evidence-bundle helpers shared by make_bundle.py and make_reference_bundle.py (stdlib only).
+"""Evidence-bundle helpers shared by the bundle tools (stdlib only).
 
 A bundle is a directory evidence/<id>/ with bundle.json (method, kit + hash, hardware, engine + commit, date,
 caveats, normalised results), the public data files it cites, and MANIFEST.sha256 (sha256sum format, every file

@@ -43,7 +43,3 @@ NVIDIA CUDA components (nvcc, runtime libraries from the `nvidia-*` wheels) are 
 - `eval/niah/niah_261k.json.gz` holds token ids (no text) of a document built from the docstrings and pydoc topics
   of the Python 3.12 standard library (PSF licence) and of the pinned PyTorch package (BSD-3-Clause).
 
-## Reference results
-
-`evidence/reference-dspark-engine-*` records results measured on a different inference engine (an engine implementing
-the DSpark block drafter, not ExLlamaV3). It is data only; no code from that engine is included.

@@ -24,12 +24,11 @@ class RenderResultsTest(unittest.TestCase):
         for name in rr.BLOCKS:
             self.assertTrue(rr.render_block(name, bundles).strip(), name)
 
-    def test_summary_has_three_labelled_columns_and_pending_placeholder(self):
+    def test_summary_has_two_labelled_columns(self):
         text = rr.render_block("results-summary", rr.load_bundles(ROOT))
         header = text.splitlines()[0]
-        for col in ("ExLlamaV3, plain decode", "ExLlamaV3 + DSpark drafting", "Reference engine"):
+        for col in ("ExLlamaV3, plain decode", "ExLlamaV3 + DSpark drafting"):
             self.assertIn(col, header)
-        self.assertIn("not reproducible here", header)
 
     def test_write_then_check_roundtrip_and_detects_edits(self):
         td = tempfile.mkdtemp()
@@ -66,7 +65,7 @@ class RenderResultsTest(unittest.TestCase):
     def test_number_change_in_a_bundle_changes_the_table(self):
         b = rr.load_bundles(ROOT)
         before = rr.render_block("q200-table", b)
-        b["reference-engine"]["results"]["q200"]["families"]["gsm8k"]["passed"] = 1
+        b["exllamav3-dspark"]["results"]["q200"]["families"]["gsm8k"]["passed"] = 1
         self.assertNotEqual(rr.render_block("q200-table", b), before)
 
 

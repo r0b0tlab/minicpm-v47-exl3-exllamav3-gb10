@@ -13,13 +13,13 @@ suite and the measured record, laid out by the r0b0tlab model-repo protocol ([do
 
 ## What runs where
 
-| | ExLlamaV3 plain decode | ExLlamaV3 + DSpark drafting | The same weights on an engine with the vision tower and DSpark drafting |
-|---|---|---|---|
-| runtime | this repository, profile `gb10-text-262k` | this repository, profile `gb10-text-262k-dspark` (`./run.sh --with-draft`) | not part of this repository |
-| input | **text only** (image / video parts are a clear HTTP 400) | **text only** | text, images, video |
-| decoding | autoregressive | DSpark block drafter: 15 drafts per round, Markov walk over the top 64 candidates, adaptive verification | DSpark block drafter, 15 drafts per round |
-| output vs plain decoding | the reference | **not bit-identical**: 59 of 80 greedy streams identical to plain on the 80-prompt kit with adaptive drafting (21 differ; the divergence point and cause were not measured) | bit-identical |
-| numbers in this README | measured here | measured here | **reference numbers**, labelled as such, not reproducible with this repository's runtime |
+| | ExLlamaV3 plain decode | ExLlamaV3 + DSpark drafting |
+|---|---|---|
+| runtime | this repository, profile `gb10-text-262k` | this repository, profile `gb10-text-262k-dspark` (`./run.sh --with-draft`) |
+| input | **text only** (image / video parts are a clear HTTP 400) | **text only** |
+| decoding | autoregressive | DSpark block drafter: 15 drafts per round, Markov walk over the top 64 candidates, adaptive verification |
+| output vs plain decoding | the reference | **not bit-identical**: 59 of 80 greedy streams identical to plain on the 80-prompt kit with adaptive drafting (21 differ; the divergence point and cause were not measured) |
+| numbers in this README | measured here | measured here |
 
 ExLlamaV3 stores the vision tower (bf16, byte-identical to the source) but does not run it. The drafted profile
 attaches the 451 MB DSpark draft (`r0b0tlab/MiniCPM-V-4.7-35B-A3B-DSpark-EXL3-6.00bpw`) through the
@@ -83,54 +83,40 @@ at 1k / 4k / 32k / 128k / 261k tokens (medians of three cold repeats), and the f
 Everything below the line is generated from the hash-listed bundles in [`evidence/`](evidence/).
 
 <!-- BEGIN GENERATED:results-summary -->
-| metric | ExLlamaV3, plain decode (this repo's runtime) | ExLlamaV3 + DSpark drafting | Reference engine: DSpark drafting + vision (not reproducible here) |
-|---|---:|---:|---:|
-| **Q200v2 text-180**, accuracy | 167/180 (92.8%) | 169/180 (93.9%) | 168/180 (93.3%) |
-| &nbsp;&nbsp;GSM8K-style math (80) | 74/80 (92.5%) | 75/80 (93.8%) | 76/80 (95.0%) |
-| &nbsp;&nbsp;HumanEval-style code (40) | 39/40 (97.5%) | 39/40 (97.5%) | 38/40 (95.0%) |
-| &nbsp;&nbsp;IFEval-style instruction following (40) | 35/40 (87.5%) | 35/40 (87.5%) | 35/40 (87.5%) |
-| &nbsp;&nbsp;Hard reasoning (20, AI-graded, see notes) | 19/20 (95.0%) | 20/20 (100.0%) | 19/20 (95.0%) |
-| Q200v2 end-to-end tok/s, 1 request in flight (reference column: with drafting) | 58.7 | 109.8 | 135.0 |
-| Q200v2 end-to-end tok/s, 4 requests in flight (ExLlamaV3: experimental batch 4; reference: with drafting) | 94.0 | not run (batch 1) | 183.8 |
-| Decode tok/s at ~4k context | 47.0 | 70.7 | 66.8 |
-| Decode tok/s at ~32k context | 48.2 | 48.7 | 54.0 |
-| Decode tok/s at ~128k context | 34.7 | 24.1 | 32.8 |
-| Decode tok/s at ~261k context | 24.7 | 15.9 | 21.5 |
-| Prefill tok/s at ~32k | 2,889 | 2,839 | 4,211 |
-| Cold time to first token at ~32k (s) | 11.3 | 11.5 | 7.6 |
-| Cold time to first token at ~261k (s) | 226.8 | 227.1 | 137.5 |
-| Needle retrieval (22 questions, token-exact) | 19/22 exact | 19/22 exact | 20/22 exact |
-| Leg D decode tok/s, GSM8K-style, plain | 60.1 | - | 67.1 |
-| Leg D decode tok/s, code, plain | 59.8 | - | 68.2 |
-| Leg D decode tok/s, chat, plain | 59.4 | - | 68.4 |
-| Leg D decode tok/s, GSM8K-style, drafted, adaptive verification | n/a | 177.8 | 227.3 |
-| Leg D decode tok/s, code, drafted, adaptive verification | n/a | 220.5 | 280.4 |
-| Leg D decode tok/s, chat, drafted, adaptive verification | n/a | 69.0 | 84.7 |
-| Leg D decode tok/s, GSM8K-style, drafted, always 15 drafts | n/a | 162.1 | - |
-| Leg D decode tok/s, code, drafted, always 15 drafts | n/a | 207.3 | - |
-| Leg D decode tok/s, chat, drafted, always 15 drafts | n/a | 41.0 | - |
-| Leg D greedy streams identical to plain decoding | n/a | 59/80 | 80/80 (bit-identical by construction and checked) |
-| GPU-side resident memory | 29.9 GiB allocated | 33.8 GiB allocated | 34.2 GiB |
+| metric | ExLlamaV3, plain decode (this repo's runtime) | ExLlamaV3 + DSpark drafting |
+|---|---:|---:|
+| **Q200v2 text-180**, accuracy | 167/180 (92.8%) | 169/180 (93.9%) |
+| &nbsp;&nbsp;GSM8K-style math (80) | 74/80 (92.5%) | 75/80 (93.8%) |
+| &nbsp;&nbsp;HumanEval-style code (40) | 39/40 (97.5%) | 39/40 (97.5%) |
+| &nbsp;&nbsp;IFEval-style instruction following (40) | 35/40 (87.5%) | 35/40 (87.5%) |
+| &nbsp;&nbsp;Hard reasoning (20, AI-graded, see notes) | 19/20 (95.0%) | 20/20 (100.0%) |
+| Q200v2 end-to-end tok/s, 1 request in flight | 58.7 | 109.8 |
+| Q200v2 end-to-end tok/s, 4 requests in flight (ExLlamaV3: experimental batch 4) | 94.0 | not run (batch 1) |
+| Decode tok/s at ~4k context | 47.0 | 70.7 |
+| Decode tok/s at ~32k context | 48.2 | 48.7 |
+| Decode tok/s at ~128k context | 34.7 | 24.1 |
+| Decode tok/s at ~261k context | 24.7 | 15.9 |
+| Prefill tok/s at ~32k | 2,889 | 2,839 |
+| Cold time to first token at ~32k (s) | 11.3 | 11.5 |
+| Cold time to first token at ~261k (s) | 226.8 | 227.1 |
+| Needle retrieval (22 questions, token-exact) | 19/22 exact | 19/22 exact |
+| Leg D decode tok/s, GSM8K-style, plain | 60.1 | - |
+| Leg D decode tok/s, code, plain | 59.8 | - |
+| Leg D decode tok/s, chat, plain | 59.4 | - |
+| Leg D decode tok/s, GSM8K-style, drafted, adaptive verification | n/a | 177.8 |
+| Leg D decode tok/s, code, drafted, adaptive verification | n/a | 220.5 |
+| Leg D decode tok/s, chat, drafted, adaptive verification | n/a | 69.0 |
+| Leg D decode tok/s, GSM8K-style, drafted, always 15 drafts | n/a | 162.1 |
+| Leg D decode tok/s, code, drafted, always 15 drafts | n/a | 207.3 |
+| Leg D decode tok/s, chat, drafted, always 15 drafts | n/a | 41.0 |
+| Leg D greedy streams identical to plain decoding | n/a | 59/80 |
+| GPU-side resident memory | 29.9 GiB allocated | 33.8 GiB allocated |
 <!-- END GENERATED:results-summary -->
 
 Reading the table:
 
-- The **ExLlamaV3** column is this repository's runtime on one GB10: plain autoregressive decode, text path, batch
-  size 1. The **reference engine** column is the same weights on an engine that implements the DSpark drafter and the
-  vision tower; its Q200v2 throughput and Leg D "drafted" rows are *with drafting*, its decode / prefill / TTFT depth
-  rows are plain decoding. Those numbers cannot be reproduced with this repository. The reference column was measured on 2026-10-13
-  (bundle `evidence/reference-dspark-engine-20261013`); it has not been re-measured since, so its decode figures at depth
-  are dated, not current.
-- Accuracy (Q200v2, same kit, same settings, greedy) is comparable between the two engines: the families agree
-  within a few rows and 164 of 180 rows are passed by both (the row-level table is in
-  [docs/RESULTS.md](docs/RESULTS.md)). `hard_reasoning` has no automatic grader: the 20 answers of each run were
-  read item by item against the kit's reference answers by the builder of that run, not by an independent reviewer;
-  verdicts and rationales are in the bundles. The plain run has one ExLlamaV3 row at the 8,192-token ceiling (`hard-13`,
-  no answer, counted as failed); the drafted run has one (`humaneval-032`, no answer, counted as failed).
-- Plain decoding on ExLlamaV3 runs at 60 tok/s on short contexts against 68 on the reference engine (88 %); the
-  much higher Q200v2 and Leg D "drafted" throughput of the reference column is the drafter. At long context
-  ExLlamaV3's plain decode is at least as fast (35 and 25 tok/s at 128k and 261k against 33 and 22 tok/s), while
-  its prefill is 1.5 to 2.2 times slower (a cold 261k prefill takes 227 s against 138 s).
+- Every number in this README was measured on this repository's runtime, on one GB10: plain autoregressive decode (profile `gb10-text-262k`) and DSpark drafting (profile `gb10-text-262k-dspark`), text path, batch size 1.
+- Accuracy (Q200v2, same kit, same settings, greedy): 167 of 180 rows pass with plain decoding and 169 of 180 with drafting. `hard_reasoning` has no automatic grader: the 20 answers of each run were read item by item against the kit's reference answers, by the builder's assistant for the plain run and by a blind AI subagent for the drafted run; verdicts and rationales are in the bundles. The plain run has one row at the 8,192-token ceiling (`hard-13`, no answer, counted as failed); the drafted run has one (`humaneval-032`, no answer, counted as failed).
 - Decode tok/s at a fixed prompt depth between 2k and 32k tokens varies by up to 20 % between depths, and the first
   requests a freshly started server sees decode and prefill more slowly than later ones (4,096 tokens: 47 tok/s
   on the first visit in the grid, 55 to 57 once warm; see "Decode speed at a depth depends on how long the server

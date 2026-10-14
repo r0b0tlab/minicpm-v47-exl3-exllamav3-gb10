@@ -2,7 +2,7 @@
 # The evaluation suite against ANY OpenAI-compatible endpoint, writing an evidence bundle.
 #
 #   eval/run_suite.sh BASE_URL LABEL [--lanes smoke,bench,niah,legd,q200] [--workers 1] [--date YYYY-MM-DD]
-#                     [--column exllamav3-plain|exllamav3-dspark|reference-engine] [--engine-name N]
+#                     [--column exllamav3-plain|exllamav3-dspark] [--engine-name N]
 #                     [--engine-commit SHA] [--mode TEXT] [--manual-evidence FILE] [--streams 1]
 #
 # Lanes (same methods as the reference measurements, so the columns compare side by side):

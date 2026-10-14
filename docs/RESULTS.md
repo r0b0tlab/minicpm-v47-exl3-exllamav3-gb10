@@ -1,6 +1,6 @@
 # Results
 
-Measured record of this repository's runtime (ExLlamaV3, plain decode and with DSpark drafting) and of the reference engine, with method and
+Measured record of this repository's runtime (ExLlamaV3, plain decode and with DSpark drafting), with method and
 limits. Tables between GENERATED markers are rendered from `evidence/*/bundle.json` by
 `scripts/render_results.py`; everything else is prose around them.
 
@@ -18,34 +18,34 @@ limits. Tables between GENERATED markers are rendered from `evidence/*/bundle.js
 ## Summary table
 
 <!-- BEGIN GENERATED:results-summary -->
-| metric | ExLlamaV3, plain decode (this repo's runtime) | ExLlamaV3 + DSpark drafting | Reference engine: DSpark drafting + vision (not reproducible here) |
-|---|---:|---:|---:|
-| **Q200v2 text-180**, accuracy | 167/180 (92.8%) | 169/180 (93.9%) | 168/180 (93.3%) |
-| &nbsp;&nbsp;GSM8K-style math (80) | 74/80 (92.5%) | 75/80 (93.8%) | 76/80 (95.0%) |
-| &nbsp;&nbsp;HumanEval-style code (40) | 39/40 (97.5%) | 39/40 (97.5%) | 38/40 (95.0%) |
-| &nbsp;&nbsp;IFEval-style instruction following (40) | 35/40 (87.5%) | 35/40 (87.5%) | 35/40 (87.5%) |
-| &nbsp;&nbsp;Hard reasoning (20, AI-graded, see notes) | 19/20 (95.0%) | 20/20 (100.0%) | 19/20 (95.0%) |
-| Q200v2 end-to-end tok/s, 1 request in flight (reference column: with drafting) | 58.7 | 109.8 | 135.0 |
-| Q200v2 end-to-end tok/s, 4 requests in flight (ExLlamaV3: experimental batch 4; reference: with drafting) | 94.0 | not run (batch 1) | 183.8 |
-| Decode tok/s at ~4k context | 47.0 | 70.7 | 66.8 |
-| Decode tok/s at ~32k context | 48.2 | 48.7 | 54.0 |
-| Decode tok/s at ~128k context | 34.7 | 24.1 | 32.8 |
-| Decode tok/s at ~261k context | 24.7 | 15.9 | 21.5 |
-| Prefill tok/s at ~32k | 2,889 | 2,839 | 4,211 |
-| Cold time to first token at ~32k (s) | 11.3 | 11.5 | 7.6 |
-| Cold time to first token at ~261k (s) | 226.8 | 227.1 | 137.5 |
-| Needle retrieval (22 questions, token-exact) | 19/22 exact | 19/22 exact | 20/22 exact |
-| Leg D decode tok/s, GSM8K-style, plain | 60.1 | - | 67.1 |
-| Leg D decode tok/s, code, plain | 59.8 | - | 68.2 |
-| Leg D decode tok/s, chat, plain | 59.4 | - | 68.4 |
-| Leg D decode tok/s, GSM8K-style, drafted, adaptive verification | n/a | 177.8 | 227.3 |
-| Leg D decode tok/s, code, drafted, adaptive verification | n/a | 220.5 | 280.4 |
-| Leg D decode tok/s, chat, drafted, adaptive verification | n/a | 69.0 | 84.7 |
-| Leg D decode tok/s, GSM8K-style, drafted, always 15 drafts | n/a | 162.1 | - |
-| Leg D decode tok/s, code, drafted, always 15 drafts | n/a | 207.3 | - |
-| Leg D decode tok/s, chat, drafted, always 15 drafts | n/a | 41.0 | - |
-| Leg D greedy streams identical to plain decoding | n/a | 59/80 | 80/80 (bit-identical by construction and checked) |
-| GPU-side resident memory | 29.9 GiB allocated | 33.8 GiB allocated | 34.2 GiB |
+| metric | ExLlamaV3, plain decode (this repo's runtime) | ExLlamaV3 + DSpark drafting |
+|---|---:|---:|
+| **Q200v2 text-180**, accuracy | 167/180 (92.8%) | 169/180 (93.9%) |
+| &nbsp;&nbsp;GSM8K-style math (80) | 74/80 (92.5%) | 75/80 (93.8%) |
+| &nbsp;&nbsp;HumanEval-style code (40) | 39/40 (97.5%) | 39/40 (97.5%) |
+| &nbsp;&nbsp;IFEval-style instruction following (40) | 35/40 (87.5%) | 35/40 (87.5%) |
+| &nbsp;&nbsp;Hard reasoning (20, AI-graded, see notes) | 19/20 (95.0%) | 20/20 (100.0%) |
+| Q200v2 end-to-end tok/s, 1 request in flight | 58.7 | 109.8 |
+| Q200v2 end-to-end tok/s, 4 requests in flight (ExLlamaV3: experimental batch 4) | 94.0 | not run (batch 1) |
+| Decode tok/s at ~4k context | 47.0 | 70.7 |
+| Decode tok/s at ~32k context | 48.2 | 48.7 |
+| Decode tok/s at ~128k context | 34.7 | 24.1 |
+| Decode tok/s at ~261k context | 24.7 | 15.9 |
+| Prefill tok/s at ~32k | 2,889 | 2,839 |
+| Cold time to first token at ~32k (s) | 11.3 | 11.5 |
+| Cold time to first token at ~261k (s) | 226.8 | 227.1 |
+| Needle retrieval (22 questions, token-exact) | 19/22 exact | 19/22 exact |
+| Leg D decode tok/s, GSM8K-style, plain | 60.1 | - |
+| Leg D decode tok/s, code, plain | 59.8 | - |
+| Leg D decode tok/s, chat, plain | 59.4 | - |
+| Leg D decode tok/s, GSM8K-style, drafted, adaptive verification | n/a | 177.8 |
+| Leg D decode tok/s, code, drafted, adaptive verification | n/a | 220.5 |
+| Leg D decode tok/s, chat, drafted, adaptive verification | n/a | 69.0 |
+| Leg D decode tok/s, GSM8K-style, drafted, always 15 drafts | n/a | 162.1 |
+| Leg D decode tok/s, code, drafted, always 15 drafts | n/a | 207.3 |
+| Leg D decode tok/s, chat, drafted, always 15 drafts | n/a | 41.0 |
+| Leg D greedy streams identical to plain decoding | n/a | 59/80 |
+| GPU-side resident memory | 29.9 GiB allocated | 33.8 GiB allocated |
 <!-- END GENERATED:results-summary -->
 
 ## DSpark drafting
@@ -70,69 +70,53 @@ Measured cost model (ms; one verify pass over n rows, 300 committed tokens; draf
 ## Q200v2 text-180
 
 <!-- BEGIN GENERATED:q200-table -->
-| Q200v2 text-180 | ExLlamaV3, plain decode (this repo's runtime) | ExLlamaV3 + DSpark drafting | Reference engine: DSpark drafting + vision (not reproducible here) |
-|---|---:|---:|---:|
-| GSM8K-style math (80) | 74/80 (92.5%) | 75/80 (93.8%) | 76/80 (95.0%) |
-| HumanEval-style code (40) | 39/40 (97.5%) | 39/40 (97.5%) | 38/40 (95.0%) |
-| IFEval-style instruction following (40) | 35/40 (87.5%) | 35/40 (87.5%) | 35/40 (87.5%) |
-| Hard reasoning (20, AI-graded, see notes) | 19/20 (95.0%) | 20/20 (100.0%) | 19/20 (95.0%) |
-| **all 180** | 167/180 (92.8%) | 169/180 (93.9%) | 168/180 (93.3%) |
-| completion tokens | 157,491 | 155,181 | 161,694 |
-| wall seconds, 1 request in flight | 2,683 | 1,413 | 1,198 |
-| end-to-end tok/s, 1 request in flight | 58.7 | 109.8 | 135.0 |
-| median per-request tok/s | 59.6 | 124.8 | 153.2 |
-| e2e tok/s, gsm8k | 59.7 | 126.8 | 156.4 |
-| e2e tok/s, humaneval | 59.2 | 111.3 | 141.6 |
-| e2e tok/s, ifeval | 59.5 | 93.2 | 115.5 |
-| e2e tok/s, hard_reasoning | 59.7 | 130.0 | 154.0 |
-| finish reasons | length 1, stop 179 | length 1, stop 179 | length 1, stop 179 |
-| 4 requests in flight: pass count | 168/180 (93.3%) | not run | 168/180 (93.3%) |
-| 4 requests in flight: families (gsm8k / humaneval / ifeval / hard) | 75 / 39 / 34 / 20 | - | 76 / 38 / 35 / 19 |
-| 4 requests in flight: wall seconds | 1,681 | not run | 880 |
-| 4 requests in flight: end-to-end tok/s | 94.0 | not run | 183.8 |
+| Q200v2 text-180 | ExLlamaV3, plain decode (this repo's runtime) | ExLlamaV3 + DSpark drafting |
+|---|---:|---:|
+| GSM8K-style math (80) | 74/80 (92.5%) | 75/80 (93.8%) |
+| HumanEval-style code (40) | 39/40 (97.5%) | 39/40 (97.5%) |
+| IFEval-style instruction following (40) | 35/40 (87.5%) | 35/40 (87.5%) |
+| Hard reasoning (20, AI-graded, see notes) | 19/20 (95.0%) | 20/20 (100.0%) |
+| **all 180** | 167/180 (92.8%) | 169/180 (93.9%) |
+| completion tokens | 157,491 | 155,181 |
+| wall seconds, 1 request in flight | 2,683 | 1,413 |
+| end-to-end tok/s, 1 request in flight | 58.7 | 109.8 |
+| median per-request tok/s | 59.6 | 124.8 |
+| e2e tok/s, gsm8k | 59.7 | 126.8 |
+| e2e tok/s, humaneval | 59.2 | 111.3 |
+| e2e tok/s, ifeval | 59.5 | 93.2 |
+| e2e tok/s, hard_reasoning | 59.7 | 130.0 |
+| finish reasons | length 1, stop 179 | length 1, stop 179 |
+| 4 requests in flight: pass count | 168/180 (93.3%) | not run |
+| 4 requests in flight: families (gsm8k / humaneval / ifeval / hard) | 75 / 39 / 34 / 20 | - |
+| 4 requests in flight: wall seconds | 1,681 | not run |
+| 4 requests in flight: end-to-end tok/s | 94.0 | not run |
 <!-- END GENERATED:q200-table -->
-
-### Row-level agreement with the reference engine
-
-Same kit, same prompts, greedy decoding on both engines. "Byte-identical answer" counts rows whose final answer text
-is identical (sha256 of `message.content`); different engines run different fp16/bf16 kernels, so long
-chain-of-thought generations drift apart even when both are correct.
-
-<!-- BEGIN GENERATED:agreement-table -->
-| family | rows | both pass | only ExLlamaV3 plain | only reference engine | neither | byte-identical answer |
-|---|---:|---:|---:|---:|---:|---:|
-| gsm8k | 80 | 74 | 0 | 2 | 4 | 38 |
-| humaneval | 40 | 38 | 1 | 0 | 1 | 24 |
-| ifeval | 40 | 34 | 1 | 1 | 4 | 2 |
-| hard_reasoning | 20 | 18 | 1 | 1 | 0 | 2 |
-| all | 180 | 164 | 3 | 4 | 9 | 66 |
-<!-- END GENERATED:agreement-table -->
 
 ## Decode, prefill and time to first token by context depth
 
 <!-- BEGIN GENERATED:bench-table -->
-| context depth: measure | ExLlamaV3, plain decode (this repo's runtime) | ExLlamaV3 + DSpark drafting | Reference engine: DSpark drafting + vision (not reproducible here) |
-|---|---:|---:|---:|
-| 1,024 tokens: decode tok/s | 59.5 | 65.6 | - |
-| 1,024 tokens: prefill tok/s | 1,096 | 1,115 | - |
-| 1,024 tokens: cold TTFT (s) | 0.93 | 0.92 | - |
-| 1,024 tokens: prefix-cache-hit TTFT (s) | 0.16 | 0.15 | - |
-| 4,096 tokens: decode tok/s | 47.0 | 70.7 | 66.8 |
-| 4,096 tokens: prefill tok/s | 2,077 | 2,035 | 4,551 |
-| 4,096 tokens: cold TTFT (s) | 1.97 | 2.01 | 0.90 |
-| 4,096 tokens: prefix-cache-hit TTFT (s) | 0.16 | 0.16 | 0.07 |
-| 32,768 tokens: decode tok/s | 48.2 | 48.7 | 54.0 |
-| 32,768 tokens: prefill tok/s | 2,889 | 2,839 | 4,211 |
-| 32,768 tokens: cold TTFT (s) | 11.34 | 11.54 | 7.60 |
-| 32,768 tokens: prefix-cache-hit TTFT (s) | 0.19 | 0.19 | 0.10 |
-| 131,072 tokens: decode tok/s | 34.7 | 24.1 | 32.8 |
-| 131,072 tokens: prefill tok/s | 1,764 | 1,764 | 2,777 |
-| 131,072 tokens: cold TTFT (s) | 74.29 | 74.29 | 46.20 |
-| 131,072 tokens: prefix-cache-hit TTFT (s) | 0.31 | 0.31 | 0.19 |
-| 261,000 tokens: decode tok/s | 24.7 | 15.9 | 21.5 |
-| 261,000 tokens: prefill tok/s | 1,151 | 1,149 | 1,901 |
-| 261,000 tokens: cold TTFT (s) | 226.79 | 227.11 | 137.50 |
-| 261,000 tokens: prefix-cache-hit TTFT (s) | 0.35 | 0.35 | 0.31 |
+| context depth: measure | ExLlamaV3, plain decode (this repo's runtime) | ExLlamaV3 + DSpark drafting |
+|---|---:|---:|
+| 1,024 tokens: decode tok/s | 59.5 | 65.6 |
+| 1,024 tokens: prefill tok/s | 1,096 | 1,115 |
+| 1,024 tokens: cold TTFT (s) | 0.93 | 0.92 |
+| 1,024 tokens: prefix-cache-hit TTFT (s) | 0.16 | 0.15 |
+| 4,096 tokens: decode tok/s | 47.0 | 70.7 |
+| 4,096 tokens: prefill tok/s | 2,077 | 2,035 |
+| 4,096 tokens: cold TTFT (s) | 1.97 | 2.01 |
+| 4,096 tokens: prefix-cache-hit TTFT (s) | 0.16 | 0.16 |
+| 32,768 tokens: decode tok/s | 48.2 | 48.7 |
+| 32,768 tokens: prefill tok/s | 2,889 | 2,839 |
+| 32,768 tokens: cold TTFT (s) | 11.34 | 11.54 |
+| 32,768 tokens: prefix-cache-hit TTFT (s) | 0.19 | 0.19 |
+| 131,072 tokens: decode tok/s | 34.7 | 24.1 |
+| 131,072 tokens: prefill tok/s | 1,764 | 1,764 |
+| 131,072 tokens: cold TTFT (s) | 74.29 | 74.29 |
+| 131,072 tokens: prefix-cache-hit TTFT (s) | 0.31 | 0.31 |
+| 261,000 tokens: decode tok/s | 24.7 | 15.9 |
+| 261,000 tokens: prefill tok/s | 1,151 | 1,149 |
+| 261,000 tokens: cold TTFT (s) | 226.79 | 227.11 |
+| 261,000 tokens: prefix-cache-hit TTFT (s) | 0.35 | 0.35 |
 <!-- END GENERATED:bench-table -->
 
 ### Decode speed at a depth depends on how long the server has been up
@@ -177,42 +161,42 @@ Long generation from a 64-token prompt (context grows while decoding): 2,048 new
 ## Needle retrieval
 
 <!-- BEGIN GENERATED:niah-table -->
-| needle-in-a-haystack, 261,001-token document | ExLlamaV3, plain decode (this repo's runtime) | ExLlamaV3 + DSpark drafting | Reference engine: DSpark drafting + vision (not reproducible here) |
-|---|---:|---:|---:|
-| questions asked | 22 | 22 | 22 |
-| exact | 19 | 19 | 20 |
-| misses | needle 3@200000 -> other_needle; needle 3@261000 -> other_needle; needle 4@261000 -> other_needle | needle 3@200000 -> other_needle; needle 3@261000 -> other_needle; needle 4@261000 -> other_needle | cut@200000 -> other_needle; cut@261000 -> other_needle |
+| needle-in-a-haystack, 261,001-token document | ExLlamaV3, plain decode (this repo's runtime) | ExLlamaV3 + DSpark drafting |
+|---|---:|---:|
+| questions asked | 22 | 22 |
+| exact | 19 | 19 |
+| misses | needle 3@200000 -> other_needle; needle 3@261000 -> other_needle; needle 4@261000 -> other_needle | needle 3@200000 -> other_needle; needle 3@261000 -> other_needle; needle 4@261000 -> other_needle |
 <!-- END GENERATED:niah-table -->
 
 ## Leg D: plain vs drafted decode
 
 <!-- BEGIN GENERATED:legd-table -->
-| Leg D decode tok/s, one stream, thinking off, up to 320 tokens | ExLlamaV3, plain decode (this repo's runtime) | ExLlamaV3 + DSpark drafting | Reference engine: DSpark drafting + vision (not reproducible here) |
-|---|---:|---:|---:|
-| greedy, gsm8k, plain | 60.1 | - | 67.1 |
-| greedy, gsm8k, drafted, adaptive verification | n/a | 177.8 | 227.3 |
-| greedy, gsm8k, drafted, always 15 drafts | n/a | 162.1 | - |
-| greedy, code, plain | 59.8 | - | 68.2 |
-| greedy, code, drafted, adaptive verification | n/a | 220.5 | 280.4 |
-| greedy, code, drafted, always 15 drafts | n/a | 207.3 | - |
-| greedy, chat, plain | 59.4 | - | 68.4 |
-| greedy, chat, drafted, adaptive verification | n/a | 69.0 | 84.7 |
-| greedy, chat, drafted, always 15 drafts | n/a | 41.0 | - |
-| greedy, all, plain | 59.9 | - | 67.7 |
-| greedy, all, drafted, adaptive verification | n/a | 161.3 | 204.9 |
-| greedy, all, drafted, always 15 drafts | n/a | 143.1 | - |
-| sampled, gsm8k, plain | 60.0 | - | 68.3 |
-| sampled, gsm8k, drafted, adaptive verification | n/a | 165.4 | 198.2 |
-| sampled, gsm8k, drafted, always 15 drafts | n/a | 144.1 | - |
-| sampled, code, plain | 59.7 | - | 68.3 |
-| sampled, code, drafted, adaptive verification | n/a | 225.8 | 271.2 |
-| sampled, code, drafted, always 15 drafts | n/a | 213.5 | - |
-| sampled, chat, plain | 59.4 | - | 68.4 |
-| sampled, chat, drafted, adaptive verification | n/a | 70.9 | 80.7 |
-| sampled, chat, drafted, always 15 drafts | n/a | 42.8 | - |
-| sampled, all, plain | 59.7 | - | 68.3 |
-| sampled, all, drafted, adaptive verification | n/a | 154.0 | 183.4 |
-| sampled, all, drafted, always 15 drafts | n/a | 133.5 | - |
+| Leg D decode tok/s, one stream, thinking off, up to 320 tokens | ExLlamaV3, plain decode (this repo's runtime) | ExLlamaV3 + DSpark drafting |
+|---|---:|---:|
+| greedy, gsm8k, plain | 60.1 | - |
+| greedy, gsm8k, drafted, adaptive verification | n/a | 177.8 |
+| greedy, gsm8k, drafted, always 15 drafts | n/a | 162.1 |
+| greedy, code, plain | 59.8 | - |
+| greedy, code, drafted, adaptive verification | n/a | 220.5 |
+| greedy, code, drafted, always 15 drafts | n/a | 207.3 |
+| greedy, chat, plain | 59.4 | - |
+| greedy, chat, drafted, adaptive verification | n/a | 69.0 |
+| greedy, chat, drafted, always 15 drafts | n/a | 41.0 |
+| greedy, all, plain | 59.9 | - |
+| greedy, all, drafted, adaptive verification | n/a | 161.3 |
+| greedy, all, drafted, always 15 drafts | n/a | 143.1 |
+| sampled, gsm8k, plain | 60.0 | - |
+| sampled, gsm8k, drafted, adaptive verification | n/a | 165.4 |
+| sampled, gsm8k, drafted, always 15 drafts | n/a | 144.1 |
+| sampled, code, plain | 59.7 | - |
+| sampled, code, drafted, adaptive verification | n/a | 225.8 |
+| sampled, code, drafted, always 15 drafts | n/a | 213.5 |
+| sampled, chat, plain | 59.4 | - |
+| sampled, chat, drafted, adaptive verification | n/a | 70.9 |
+| sampled, chat, drafted, always 15 drafts | n/a | 42.8 |
+| sampled, all, plain | 59.7 | - |
+| sampled, all, drafted, adaptive verification | n/a | 154.0 |
+| sampled, all, drafted, always 15 drafts | n/a | 133.5 |
 
 ExLlamaV3 + DSpark, greedy arm. The speed-up is against the plain run of 2026-10-13 (a different session; no same-session control was run), and '-' means that run is not in the bundle:
 
@@ -278,9 +262,9 @@ A second fresh checkout (new directory, new venv) on the same machine with the s
 ## Memory
 
 <!-- BEGIN GENERATED:memory-table -->
-| memory | ExLlamaV3, plain decode (this repo's runtime) | ExLlamaV3 + DSpark drafting | Reference engine: DSpark drafting + vision (not reproducible here) |
-|---|---:|---:|---:|
-| after load | MemAvailable before load 113.2 GiB; MemAvailable after load 79.8 GiB; allocated 29.9 GiB; reserved 30.2 GiB; max reserved (after the grid) 30.2 GiB; MemAvailable after the grid 78.2 GiB | allocated 33.8 GiB; reserved 34.2 GiB; max reserved (after the grid) 34.2 GiB; MemAvailable after the grid 73.2 GiB | resident 34.2 GiB; weights 25.3 GiB |
+| memory | ExLlamaV3, plain decode (this repo's runtime) | ExLlamaV3 + DSpark drafting |
+|---|---:|---:|
+| after load | MemAvailable before load 113.2 GiB; MemAvailable after load 79.8 GiB; allocated 29.9 GiB; reserved 30.2 GiB; max reserved (after the grid) 30.2 GiB; MemAvailable after the grid 78.2 GiB | allocated 33.8 GiB; reserved 34.2 GiB; max reserved (after the grid) 34.2 GiB; MemAvailable after the grid 73.2 GiB |
 <!-- END GENERATED:memory-table -->
 
 ## Fidelity
@@ -307,8 +291,6 @@ A second fresh checkout (new directory, new venv) on the same machine with the s
 
 - One GB10, one pass per lane, greedy decoding. The Q200v2 kit has 180 rows, so one row is 0.56 percentage points; a
   second run was not made, and ExLlamaV3's fp16 kernels are not bit-stable across load histories.
-- The reference-engine column was measured on another engine, with drafting and with the vision tower loaded; it is
-  quoted for orientation, never as something this runtime does. Its NIAH document used other prose.
 - `hard_reasoning` verdicts: the plain run's were made by the builder's assistant, the drafted run's by a blind AI subagent of that assistant; neither is an independent human review, and the kit's schema names the method
   `independent_manual_review` regardless.
 - Throughput is single-stream. Batch size 1 is the only qualified configuration of this runtime (see

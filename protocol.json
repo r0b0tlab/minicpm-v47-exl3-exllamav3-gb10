@@ -84,11 +84,6 @@
       "dir": "evidence/fidelity-20261013",
       "column": "fidelity",
       "primary": true
-    },
-    {
-      "dir": "evidence/reference-dspark-engine-20261013",
-      "column": "reference-engine",
-      "primary": true
     }
   ],
   "generated_blocks": {
@@ -100,7 +95,6 @@
       "results-summary",
       "draft-table",
       "q200-table",
-      "agreement-table",
       "bench-table",
       "niah-table",
       "legd-table",
