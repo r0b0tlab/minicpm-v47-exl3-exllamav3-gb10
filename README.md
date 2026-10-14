@@ -38,7 +38,7 @@ curl -s http://127.0.0.1:8000/v1/chat/completions -H 'Content-Type: application/
   -d '{"model":"minicpm-v-4.7-35b-a3b-exl3-6.08bpw","messages":[{"role":"user","content":"Why is the sky blue?"}],"max_tokens":1024}'
 ```
 
-or, from nothing: `curl -fsSL https://raw.githubusercontent.com/r0b0tlab/minicpm-v47-exl3-exllamav3-gb10/v2.1.0/scripts/bootstrap.sh | bash`
+or, from nothing: `curl -fsSL https://raw.githubusercontent.com/r0b0tlab/minicpm-v47-exl3-exllamav3-gb10/v2.1.2/scripts/bootstrap.sh | bash`
 (clones the pinned tag, verifies `click_run.sh` and `verify_tree.py` against embedded hashes before running anything).
 
 Useful variations: `./run.sh --plan` (what would run and why), `PROFILE=gb10-text-32k PORT=8001 ./run.sh`,

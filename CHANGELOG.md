@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.2 - 2026-10-14
+
+- The bootstrap clones `v2.1.1` by default, and the one-liner in the README points at this release's tag.
+- The tags `v2.0.0` and `v2.1.0` are deleted. Their commits stay in the history of `main`; no release objects existed for them.
+
 ## 2.1.1 - 2026-10-14
 
 - Removed the third results column, its evidence bundle and its generator, and the row-level agreement table that compared against it. The results now compare only this repository's own runs: ExLlamaV3 plain decoding and ExLlamaV3 with DSpark drafting.
